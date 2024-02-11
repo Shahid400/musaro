@@ -7,22 +7,30 @@ import {
 } from '@nestjs/common';
 import { HTTP_CODE_METADATA } from '@nestjs/common/constants';
 import { Reflector } from '@nestjs/core';
+import { FileContentTypes } from '@shared/constants';
+import { SwaggerService } from '@shared/utils';
 import { Response } from 'express';
 import { Observable, map } from 'rxjs';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
+  private excludedBaseRoutes = ['health-check'];
   constructor(private reflector: Reflector) {}
   intercept(
     context: ExecutionContext,
-    next: CallHandler<any>
+    next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
     const defaultHttpCode = this.reflector.get(
       HTTP_CODE_METADATA,
-      context.getHandler()
+      context.getHandler(),
     );
     const response: Response = context.switchToHttp().getResponse();
     const request = context.switchToHttp().getRequest();
+
+    if (this.shouldExcludeRoute(request)) {
+      return next.handle();
+    }
+
     this.checkNullOrUndefined(request.url);
 
     const HttpStatus = {
@@ -39,20 +47,32 @@ export class ResponseInterceptor implements NestInterceptor {
           response,
           request,
           defaultHttpCode,
-          HttpStatus
+          HttpStatus,
         );
 
-        // const message = SwaggerService.getMessage(
-        //   context.getClass().name,
-        //   context.getHandler().name
-        // );
-
-        return this.buildJsonResponse(
-          !this.isDeleteMethod(request) ? data : null
-          // message
+        const message = SwaggerService.getMessage(
+          context.getClass().name,
+          context.getHandler().name,
         );
-      })
+
+        if (request.loggedInBy) {
+          response.setHeader('login-session-by', request.loggedInBy);
+        }
+
+        if (this.shouldSendNonJsonResponse(response)) {
+          response.send(data);
+        } else {
+          return this.buildJsonResponse(
+            !this.isDeleteMethod(request) ? data : null,
+            message,
+          );
+        }
+      }),
     );
+  }
+
+  private shouldExcludeRoute(request: Request): boolean {
+    return this.excludedBaseRoutes.some((base) => request.url?.includes(base));
   }
 
   private checkNullOrUndefined(url: string) {
@@ -65,15 +85,22 @@ export class ResponseInterceptor implements NestInterceptor {
     response: Response,
     request: Request,
     defaultHttpCode: number,
-    HttpStatus: any
+    HttpStatus: any,
   ) {
     if (!defaultHttpCode) {
       response.status(
         response?.statusCode > 300
           ? response.statusCode
-          : HttpStatus[request.method.toUpperCase()]
+          : HttpStatus[request.method.toUpperCase()],
       );
     }
+  }
+
+  private shouldSendNonJsonResponse(response: Response): boolean {
+    return (
+      response.getHeader('Content-Type') &&
+      response.getHeader('Content-Type') !== FileContentTypes.JSON
+    );
   }
 
   private buildJsonResponse(data: any, message?: string): any {

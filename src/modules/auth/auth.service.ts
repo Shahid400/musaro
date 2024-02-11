@@ -4,11 +4,20 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { IUser, IVerifyOtp, User, UserRepository } from '../user';
+import { IUser, User, UserRepository } from '../user';
 import { JwtService } from '@nestjs/jwt';
 import { ResponseMessage } from '@shared/constants';
 import { Hash, generateOtpWithExpiry } from '@shared/utils';
 import { IOTP } from '@shared/interfaces';
+import {
+  IChangePassword,
+  IForgotPassword,
+  ILogin,
+  IResetPassword,
+  ISignup,
+  IVerifyOtp,
+  IVerifyToken,
+} from './interfaces';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +31,7 @@ export class AuthService {
       let { username } = payload;
       const userNameExists = await this.userRepository.findOne(
         {
-          username: username.toLowerCase(),
+          username,
         },
         { username: 1 },
         { notFoundThrowError: false },
@@ -36,14 +45,14 @@ export class AuthService {
     }
   }
 
-  async signup(payload: IUser) {
+  async signup(payload: ISignup) {
     try {
       const { username, mobile, password } = payload;
 
       // Check if username or mobile already exists
       const existingUser = await this.userRepository.findOne(
         {
-          $or: [{ username: username.toLowerCase() }, { mobile }],
+          $or: [{ username }, { mobile }],
         },
         { username: 1, mobile: 1 },
         { notFoundThrowError: false },
@@ -51,7 +60,7 @@ export class AuthService {
 
       if (existingUser)
         throw new ConflictException(
-          existingUser.username === username.toLowerCase()
+          existingUser.username === username
             ? ResponseMessage.USERNAME_ALREADY_EXISTS
             : ResponseMessage.MOBILE_ALREADY_EXISTS,
         );
@@ -65,7 +74,7 @@ export class AuthService {
       // Create user
       const newUser = await this.userRepository.create({
         ...payload,
-        username: username.toLowerCase(),
+        username,
         password: hashedPassword,
         otp,
       });
@@ -78,11 +87,11 @@ export class AuthService {
     }
   }
 
-  async login(payload: any) {
+  async login(payload: ILogin) {
     try {
-      const { username, password } = payload;
+      const { username, password, role } = payload;
       const user = await this.userRepository.findOne(
-        { username },
+        { username, role },
         { otp: 0 },
         { notFoundThrowError: false },
       );
@@ -141,10 +150,12 @@ export class AuthService {
     }
   }
 
-  async verifyToken(payload: any) {
+  async verifyToken(payload: IVerifyToken) {
     try {
       const { token } = payload;
-      const decoded = this.jwtService.decode(token);
+      const decoded = this.jwtService.verify(token, {
+        secret: `${process.env.JWT_SECRET_KEY}`,
+      });
       if (!decoded || !decoded?.sub)
         throw new UnauthorizedException('Invalid Token');
       const user = await this.userRepository.findOne({
@@ -157,7 +168,7 @@ export class AuthService {
     }
   }
 
-  async forgotPassword(payload: any) {
+  async forgotPassword(payload: IForgotPassword) {
     try {
       const { mobile } = payload;
       const user = await this.userRepository.findOne(
@@ -177,7 +188,7 @@ export class AuthService {
     }
   }
 
-  async changePassword(payload: any) {
+  async changePassword(payload: IChangePassword) {
     try {
       const { mobile, password } = payload;
       const hashedPassword = await Hash.make(password);
@@ -191,7 +202,7 @@ export class AuthService {
     }
   }
 
-  async resetPassword(payload: any) {
+  async resetPassword(payload: IResetPassword) {
     try {
       const { userId, oldPassword, newPassword } = payload;
       const user = await this.userRepository.findOne(

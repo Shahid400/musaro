@@ -13,3 +13,9 @@ export enum ResponseMessage {
   MOBILE_ALREADY_EXISTS = 'an account against this mobile already exists',
   INVALID_OTP = 'invalid or expired OTP',
 }
+
+export enum FileContentTypes {
+  CSV = 'application/vnd.openxmlformats',
+  PDF = 'application/pdf',
+  JSON = 'application/json',
+}

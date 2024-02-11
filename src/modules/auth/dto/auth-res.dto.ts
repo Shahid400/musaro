@@ -24,6 +24,54 @@ export class SignUpResDto extends ApiResponseDto {
   data: any;
 }
 
+export class LoginResDto extends ApiResponseDto {
+  @ApiProperty({
+    example: 'User LoggedIn',
+  })
+  message: string;
+
+  @ApiProperty({
+    example: {
+      accessToken: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+      user: {
+        _id: '65c40c36769c1259220f5e93',
+        name: 'name',
+        mobile: '03123456788',
+        role: 'Customer',
+        username: 'username',
+        city: 'city',
+        isVerified: true,
+        isActive: true,
+        reason: '',
+        createdAt: '2024-02-07T23:03:18.458Z',
+        updatedAt: '2024-02-07T23:21:05.544Z',
+      },
+    },
+  })
+  data: any;
+}
+
+export class OtpResDto extends ApiResponseDto {
+  @ApiProperty({
+    example: 'OTP is sent!',
+  })
+  message: string;
+}
+
+export class VerifyOtpResDto extends ApiResponseDto {
+  @ApiProperty({
+    example: 'OTP is verified!',
+  })
+  message: string;
+}
+
+export class ChangePasswordResDto extends ApiResponseDto {
+  @ApiProperty({
+    example: 'Password updated!',
+  })
+  message: string;
+}
+
 export class UserResDto extends ApiResponseDto {
   @ApiProperty({
     example: {

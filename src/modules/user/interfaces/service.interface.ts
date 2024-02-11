@@ -1,5 +1,5 @@
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateUserDto } from '../dto/user-res.dto';
+import { UpdateUserDto } from '../dto/user-req.dto';
 
 export interface IUserService {
   create(createUserDto: CreateUserDto): Promise<any>;

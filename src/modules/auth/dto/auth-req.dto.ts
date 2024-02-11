@@ -1,7 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { ResponseMessage, UserRole } from '@shared/constants';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
@@ -18,9 +19,7 @@ export class UserNameReqDto {
     message:
       'Username must start with an alphabet and can contain alphanumeric characters, hyphens, or underscores. It should be between 3 and 26 characters long.',
   })
-  // @Length(1, 20, {
-  //   message: 'Username can be max 20 characters long.',
-  // })
+  @Transform(({ value }) => value.toLowerCase())
   username: string;
 }
 
@@ -45,6 +44,7 @@ export class SignUpReqDto {
   @Length(1, 20, {
     message: 'Username can be max 20 characters long.',
   })
+  @Transform(({ value }) => value.toLowerCase())
   username: string;
 
   @ApiProperty({ example: 'Abc@1234' })
@@ -61,6 +61,9 @@ export class SignUpReqDto {
   @ApiProperty({ example: 'name' })
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => {
+    return value.toLowerCase();
+  })
   name: string;
 
   @ApiProperty({ example: 'city' })
@@ -73,12 +76,19 @@ export class LoginReqDto {
   @ApiProperty({ example: 'username' })
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => value.toLowerCase())
   username: string;
 
   @ApiProperty({ example: 'Abc@1234' })
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty({ example: UserRole.CUSTOMER })
+  @IsString()
+  @IsEnum(UserRole)
+  @IsNotEmpty()
+  role: string;
 }
 
 export class ResendOtpReqDto {

@@ -8,6 +8,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { extractErrorMessages } from '@shared/constants';
+import { toTitleCase } from './shared/utils/naming-case.function';
+import { SwaggerService } from '@shared/utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -43,14 +45,39 @@ async function bootstrap() {
   );
 
   const documentConfig = new DocumentBuilder()
-    .setTitle('Musaro App')
-    .setDescription('API documentation for APP')
+    .setTitle(
+      `Musaro App - API Gateway (${toTitleCase(
+        config.get('NODE_ENV') || 'development',
+      )})`,
+    )
+    .setDescription(
+      'API Gateway is open for development and testing purposes for FE developers.',
+    )
     .addBearerAuth()
-    .setVersion('1.0')
+    .setVersion('1.0.0')
     .setExternalDoc('Postman Collection', '/api-json')
     .build();
-  const document = SwaggerModule.createDocument(app, documentConfig);
-  SwaggerModule.setup('api', app, document);
+
+  new SwaggerService(
+    app,
+    documentConfig,
+  ).init();
+  // writeFileSync(
+  //   join(__dirname, 'spec.json'),
+  //   JSON.stringify({ ...SwaggerService._document, servers: [{ url: '' }] }),
+  // );
+
+  // app.use(
+  //   ['/api/*'],
+  //   expressBasicAuth({
+  //     challenge: true,
+  //     users: {
+  //       pl: 'pl123!@#',
+  //     },
+  //   }),
+  // );
+  // const document = SwaggerModule.createDocument(app, documentConfig);
+  // SwaggerModule.setup('api', app, document);
   const port = config.get('PORT') || 8000;
   await app.listen(port);
 }

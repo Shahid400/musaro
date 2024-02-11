@@ -1,2 +1,2 @@
-export * from './user-req.dto';
-export * from './user-res.dto';
+export * from './auth-req.dto';
+export * from './auth-res.dto';

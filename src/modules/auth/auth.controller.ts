@@ -18,9 +18,15 @@ import {
   ChangePasswordReqDto,
   ResetPasswordReqDto,
   ResendOtpReqDto,
-} from './dto/user-req.dto';
+} from './dto/auth-req.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { SignUpResDto } from './dto/user-res.dto';
+import {
+  ChangePasswordResDto,
+  LoginResDto,
+  OtpResDto,
+  SignUpResDto,
+  VerifyOtpResDto,
+} from './dto/auth-res.dto';
 import { UserIdDto } from '@shared/dto';
 
 @Controller('auth')
@@ -44,42 +50,42 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: SignUpResDto })
-  async login(@Body() payload: LoginReqDto): Promise<any> {
+  @ApiOkResponse({ type: LoginResDto })
+  async login(@Body() payload: LoginReqDto) {
     return await this.authService.login(payload);
   }
 
   @Post('resend-otp')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: SignUpResDto })
+  @ApiOkResponse({ type: OtpResDto })
   async resendOtp(@Body() payload: ResendOtpReqDto) {
     return await this.authService.resendOtp(payload);
   }
 
   @Post('verify-otp')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: SignUpResDto })
+  @ApiOkResponse({ type: VerifyOtpResDto })
   async verifyOtp(@Body() payload: VerifyOtpReqDto) {
     return await this.authService.verifyOtp(payload);
   }
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: SignUpResDto })
+  @ApiOkResponse({ type: OtpResDto })
   async forgotPassword(@Body() payload: ForgotPasswordReqDto) {
     return await this.authService.forgotPassword(payload);
   }
 
   @Patch('change-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: SignUpResDto })
+  @ApiOkResponse({ type: ChangePasswordResDto })
   async changePassword(@Body() payload: ChangePasswordReqDto) {
     return await this.authService.changePassword(payload);
   }
 
   @Patch('reset-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: SignUpResDto })
+  @ApiOkResponse({ type: ChangePasswordResDto })
   async resetPassword(
     @Param() param: UserIdDto,
     @Body() payload: ResetPasswordReqDto,
