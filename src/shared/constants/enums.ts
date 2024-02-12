@@ -12,6 +12,7 @@ export enum ResponseMessage {
   USERNAME_ALREADY_EXISTS = 'user name already exists',
   MOBILE_ALREADY_EXISTS = 'an account against this mobile already exists',
   INVALID_OTP = 'invalid or expired OTP',
+  NON_VERIFIED_ACCOUNT = 'Non-verified Account! Verify the OTP sent to mobile',
 }
 
 export enum FileContentTypes {

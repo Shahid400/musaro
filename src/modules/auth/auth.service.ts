@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -99,6 +100,11 @@ export class AuthService {
         throw new BadRequestException(
           ResponseMessage.INVALID_USERNAME_OR_PASSWORD,
         );
+      }
+      if (!user?.isVerified) {
+        const { mobile } = user;
+        await this.resendOtp({ mobile });
+        throw new ForbiddenException(ResponseMessage.NON_VERIFIED_ACCOUNT);
       }
       delete user.password;
       return {
