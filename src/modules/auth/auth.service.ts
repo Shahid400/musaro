@@ -11,6 +11,7 @@ import { ResponseMessage } from '@shared/constants';
 import { Hash, generateOtpWithExpiry } from '@shared/utils';
 import { IOTP } from '@shared/interfaces';
 import {
+  IAuthService,
   IChangePassword,
   IForgotPassword,
   ILogin,
@@ -21,11 +22,11 @@ import {
 } from './interfaces';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async checkUserName(payload: { username: string }) {
     try {
