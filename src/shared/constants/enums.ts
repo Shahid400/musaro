@@ -1,11 +1,11 @@
 export enum UserRole {
-  CUSTOMER = 'Customer',
-  PROVIDER = 'Provider',
+  CUSTOMER = 'CUSTOMER',
+  PROVIDER = 'PROVIDER',
 }
 
 export enum ProviderType {
-  INDIVIDUAL = 'individual',
-  ESTABLISHEDMENT = 'establishment',
+  INDIVIDUAL = 'INDIVIDUAL',
+  ESTABLISHEDMENT = 'ESTABLISHEDMENT',
 }
 
 export enum ProfileStatus {
