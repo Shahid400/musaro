@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiResponseDto } from '@shared/dto';
 
+export class CheckUserNameResDto extends ApiResponseDto {
+  @ApiProperty({
+    example: 'Username available',
+  })
+  message: string;
+}
 export class SignUpResDto extends ApiResponseDto {
   @ApiProperty({
     example: 'OTP is sent!',

@@ -26,7 +26,7 @@ export class AuthService implements IAuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async checkUserName(payload: { username: string }) {
     try {
@@ -93,7 +93,7 @@ export class AuthService implements IAuthService {
     try {
       const { username, password, role } = payload;
       const user = await this.userRepository.findOne(
-        { username, role },
+        { username, role, isActive: true },
         { otp: 0 },
         { notFoundThrowError: false },
       );
@@ -167,6 +167,7 @@ export class AuthService implements IAuthService {
         throw new UnauthorizedException('Invalid Token');
       const user = await this.userRepository.findOne({
         username: decoded?.username,
+        isActive: true,
       });
       const { password, ...result } = user;
       return result;
@@ -179,7 +180,7 @@ export class AuthService implements IAuthService {
     try {
       const { mobile } = payload;
       const user = await this.userRepository.findOne(
-        { mobile },
+        { mobile, isActive: true },
         { _id: 1, mobile: 1 },
       );
       const otp = generateOtpWithExpiry();
@@ -200,7 +201,7 @@ export class AuthService implements IAuthService {
       const { mobile, password } = payload;
       const hashedPassword = await Hash.make(password);
       await this.userRepository.findOneAndUpdate(
-        { mobile },
+        { mobile, isActive: true },
         { $set: { password: hashedPassword } },
       );
       return null;
@@ -213,7 +214,7 @@ export class AuthService implements IAuthService {
     try {
       const { userId, oldPassword, newPassword } = payload;
       const user = await this.userRepository.findOne(
-        { _id: userId },
+        { _id: userId, isActive: true },
         { password: 1 },
         { notFoundThrowError: false },
       );

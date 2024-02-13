@@ -6,3 +6,25 @@ export interface IUser {
   name: string;
   city: string;
 }
+
+export interface IProviderProfile {
+  userId: string;
+  type: string;
+  service: string;
+  serviceDescription: string;
+  yearsOfExperience: string;
+  idNumber: string;
+  idPicture: string;
+  whatsapp: string;
+  officeNumber?: string;
+}
+
+// export interface IUpdateProviderProfile {
+//   userId?: string;
+//   serviceDescription?: string;
+//   yearsOfExperience?: string;
+//   idNumber?: string;
+//   idPicture?: string;
+//   whatsapp?: string;
+//   officeNumber?: string;
+// }

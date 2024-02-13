@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
@@ -19,15 +20,22 @@ import {
   ResetPasswordReqDto,
   ResendOtpReqDto,
 } from './dto/auth-req.dto';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   ChangePasswordResDto,
+  CheckUserNameResDto,
   LoginResDto,
   OtpResDto,
   SignUpResDto,
   VerifyOtpResDto,
 } from './dto/auth-res.dto';
 import { UserIdDto } from '@shared/dto';
+import { Auth } from 'src/decorators/auth.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -36,7 +44,7 @@ export class AuthController {
 
   @Get('user-name/:username')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: SignUpResDto })
+  @ApiOkResponse({ type: CheckUserNameResDto })
   async checkUserName(@Param() payload: UserNameReqDto) {
     return await this.authService.checkUserName(payload);
   }
@@ -83,13 +91,13 @@ export class AuthController {
     return await this.authService.changePassword(payload);
   }
 
+  @ApiBearerAuth()
+  @Auth()
   @Patch('reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: ChangePasswordResDto })
-  async resetPassword(
-    @Param() param: UserIdDto,
-    @Body() payload: ResetPasswordReqDto,
-  ) {
-    return await this.authService.resetPassword({ ...param, ...payload });
+  async resetPassword(@Req() req: any, @Body() payload: ResetPasswordReqDto) {
+    const userId = req?.user?._id;
+    return await this.authService.resetPassword({ userId, ...payload });
   }
 }
