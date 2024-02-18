@@ -94,6 +94,23 @@ export class CreatePaymentReqDto {
   readonly metadata?: Record<string, any>;
 }
 
+export class MoyasarCallbackDto {
+  @ApiProperty({example: '79cced57-9deb-4c4b-8f48-59c124f79688', required: true})
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @ApiProperty({example: 'paid', required: true})
+  @IsString()
+  @IsNotEmpty()
+  status: string;
+
+  @ApiProperty({example: 'Succeeded', required: true})
+  @IsString()
+  @IsNotEmpty()
+  message: string;
+}
+
 class DateRange {
   @ApiProperty({
     type: String,

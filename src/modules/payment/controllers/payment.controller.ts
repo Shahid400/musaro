@@ -11,7 +11,7 @@ import {
   HttpStatus,
   Query,
 } from '@nestjs/common';
-import { CreatePaymentReqDto, ListPaymentsQueryParamsDto } from '../dto';
+import { CreatePaymentReqDto, ListPaymentsQueryParamsDto, MoyasarCallbackDto } from '../dto';
 import { PaymentService } from '../services/payment.service';
 import { Auth } from 'src/decorators/auth.decorator';
 import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
@@ -29,9 +29,9 @@ export class PaymentController {
     return await this.paymentService.create(createPaymentDto);
   }
 
-  @Post('payment-webhook')
-  async processCallback(@Body() payload: any): Promise<void> {
-    await this.paymentService.processCallback(payload);
+  @Get('payment-webhook')
+  async processCallback(@Query() query: MoyasarCallbackDto): Promise<void> {
+    await this.paymentService.processCallback(query);
   }
 
   // @Auth()
