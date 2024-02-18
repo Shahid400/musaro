@@ -31,6 +31,7 @@ export class PaymentController {
 
   @Get('payment-webhook')
   async processCallback(@Query() query: MoyasarCallbackDto): Promise<void> {
+    console.log("processCallback =========> ", query);
     await this.paymentService.processCallback(query);
   }
 
