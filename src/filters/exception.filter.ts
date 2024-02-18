@@ -9,11 +9,10 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 
 const EXCEPTION_MESSAGES = {
-  UserNotFoundException: 'Invalid email or password.',
-  NotAuthorizedException: 'Invalid email or password.',
+  UserNotFoundException: 'Invalid username or password.',
+  NotAuthorizedException: 'Invalid username or password.',
   CodeDeliveryFailureException:
-    'Unable to send an email, Kindly contact to support.',
-  LimitExceededException: 'Unable to send an email, Kindly contact to support.',
+    'Unable to send code, Kindly contact to support.',
 };
 
 @Catch()
@@ -63,10 +62,10 @@ export class ExceptionsFilter implements ExceptionFilter {
         response,
         {
           data: null,
-          message: 'Contact Ghulam Mustafa.',
+          message: 'Contact Developer.',
           errors: err.message,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -78,6 +77,8 @@ export class ExceptionsFilter implements ExceptionFilter {
     switch (true) {
       case exception instanceof HttpException:
         return exception.getStatus();
+      case !!exception?.response?.status:
+        return exception?.response?.status;
       case !!exception?.error?.statusCode:
         return exception?.error?.statusCode;
       case !!exception?.['$metadata']?.httpStatusCode:
@@ -86,35 +87,35 @@ export class ExceptionsFilter implements ExceptionFilter {
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(NotAuthorized|Unauthorized)/i)
+        )?.match(/(NotAuthorized|Unauthorized)/i),
       ):
         return HttpStatus.UNAUTHORIZED;
       case Boolean(
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(notfound|found)/i)
+        )?.match(/(notfound|found)/i),
       ):
         return HttpStatus.NOT_FOUND;
       case Boolean(
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(invalid|must|should)/i)
+        )?.match(/(invalid|must|should)/i),
       ):
         return HttpStatus.BAD_REQUEST;
       case Boolean(
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(already|exists)/i)
+        )?.match(/(already|exists)/i),
       ):
         return HttpStatus.CONFLICT;
       case Boolean(
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(token|revoked)/i)
+        )?.match(/(token|revoked)/i),
       ):
         return HttpStatus.UNAUTHORIZED;
       default:
@@ -142,6 +143,9 @@ export class ExceptionsFilter implements ExceptionFilter {
     switch (true) {
       case Array.isArray(exception?.response?.message):
         return exception?.response?.message[0];
+      case exception?.name == 'AxiosError' &&
+        !!exception?.response?.data?.message:
+        return exception?.response?.data?.message;
       case Object.keys(EXCEPTION_MESSAGES).includes(exception?.name):
         return EXCEPTION_MESSAGES[exception?.name];
       case !!exception['$fault']:
@@ -167,6 +171,10 @@ export class ExceptionsFilter implements ExceptionFilter {
     switch (true) {
       case Array.isArray(exception.errors):
         return exception.errors;
+      case !!exception?.response?.data.errors:
+        return Array.isArray(exception?.response?.data?.errors)
+          ? exception?.response?.data?.errors
+          : [exception?.response?.data?.errors];
       case typeof exception.errors == 'object':
         return Object.values(exception.errors);
       case Array.isArray(exception?.response?.errors):
@@ -197,13 +205,13 @@ export class ExceptionsFilter implements ExceptionFilter {
     if (!noLogStatus.includes(httpStatus) && !noLogMessages.includes(message)) {
       this.logger.error(
         message?.charAt(0).toUpperCase() + message?.slice(1),
-        exceptionTitle?.replace('Exception', '')
+        exceptionTitle?.replace('Exception', ''),
       );
 
       exception?.stack &&
         this.logger.error(
           '    at ' +
-            exception?.stack?.split('    at ')?.slice(1).join('    at ')
+            exception?.stack?.split('    at ')?.slice(1).join('    at '),
         );
     }
   }

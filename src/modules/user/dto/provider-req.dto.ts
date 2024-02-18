@@ -1,9 +1,8 @@
-// import { PartialType } from '@nestjs/mapped-types';
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString, ValidateIf } from 'class-validator';
 import { ProviderType } from '@shared/constants';
 
-export class ProviderProfileReqDto {
+export class UpdateProviderProfileReqDto {
   @ApiProperty({ type: String, example: ProviderType.INDIVIDUAL })
   @IsEnum(ProviderType)
   @IsNotEmpty()
@@ -45,7 +44,3 @@ export class ProviderProfileReqDto {
   @IsNotEmpty()
   officeNumber?: string;
 }
-
-// export class UpdateProviderProfileReqDto extends PartialType(
-//   OmitType(ProviderProfileReqDto, ['type', 'service']),
-// ) {}

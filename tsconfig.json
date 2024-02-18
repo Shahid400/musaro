@@ -21,6 +21,7 @@
       "@shared/abstracts": ["src/shared/abstracts"],
       "@shared/constants": ["src/shared/constants"],
       "@shared/dto": ["src/shared/dto"],
+      "@shared/repositories": ["src/shared/repositories"],
       "@shared/utils": ["src/shared/utils"],
       "@shared/interfaces": ["src/shared/interfaces"],
       "@auth": ["src/modules/auth"],

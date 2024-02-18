@@ -11,6 +11,7 @@ export interface ISignup {
   password: string;
   name: string;
   city: string;
+  appLanguage?: string;
 }
 
 export interface IVerifyOtp {

@@ -1,6 +1,6 @@
 import { SchemaFactory, Prop, Schema } from '@nestjs/mongoose';
 import { AbstractSchema } from '@shared/abstracts';
-import { ProfileStatus, UserRole } from '@shared/constants';
+import { AppLanguage, ProfileStatus, UserRole } from '@shared/constants';
 import { IOTP } from '@shared/interfaces';
 import mongoose, { SchemaTypes, Types } from 'mongoose';
 
@@ -36,25 +36,25 @@ class ProviderDetail extends AbstractSchema<string> {
 }
 const ProviderDetailSchema = SchemaFactory.createForClass(ProviderDetail);
 
-@Schema({
-  _id: false,
-  versionKey: false,
-  // timestamps: false,
-})
-class PaymentDetail extends AbstractSchema<string> {
-  @Prop({ type: String, required: true })
-  paymentPlan?: string;
+// @Schema({
+//   _id: false,
+//   versionKey: false,
+//   // timestamps: false,
+// })
+// class PaymentDetail extends AbstractSchema<string> {
+//   @Prop({ type: String, required: true })
+//   paymentPlan?: string;
 
-  @Prop({ type: String, required: true })
-  paymentOption?: string;
+//   @Prop({ type: String, required: true })
+//   paymentOption?: string;
 
-  @Prop({ type: Date, required: true })
-  subscriptionStart?: Date;
+//   @Prop({ type: Date, required: true })
+//   subscriptionStart?: Date;
 
-  @Prop({ type: Date, required: true })
-  subscriptionEnd?: Date;
-}
-const PaymentDetailSchema = SchemaFactory.createForClass(PaymentDetail);
+//   @Prop({ type: Date, required: true })
+//   subscriptionEnd?: Date;
+// }
+// const PaymentDetailSchema = SchemaFactory.createForClass(PaymentDetail);
 
 @Schema({
   collection: 'users',
@@ -100,6 +100,13 @@ export class User extends AbstractSchema<string> {
   reason?: string;
 
   @Prop({
+    type: String,
+    required: false,
+    default: AppLanguage.ENGLISH,
+  })
+  appLanguage?: string;
+
+  @Prop({
     type: {
       code: { type: Number, required: true },
       expiresAt: { type: Date, required: true },
@@ -112,8 +119,8 @@ export class User extends AbstractSchema<string> {
   @Prop({ type: ProviderDetailSchema, required: false })
   serviceDetail?: ProviderDetail;
 
-  @Prop({ type: PaymentDetailSchema, required: false })
-  paymentDetail?: PaymentDetail;
+  // @Prop({ type: PaymentDetailSchema, required: false })
+  // paymentDetail?: PaymentDetail;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

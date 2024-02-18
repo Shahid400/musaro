@@ -1,2 +1,4 @@
-export * from './user-req.dto';
-export * from './user-res.dto';
+export * from './customer-req.dto';
+export * from './customer-res.dto';
+export * from './provider-req.dto';
+export * from './provider-res.dto';

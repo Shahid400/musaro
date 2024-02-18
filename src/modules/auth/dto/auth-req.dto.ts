@@ -6,6 +6,7 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Length,
   Matches,
@@ -70,6 +71,11 @@ export class SignUpReqDto {
   @IsString()
   @IsNotEmpty()
   city: string;
+
+  @ApiProperty({ example: 'english' })
+  @IsString()
+  @IsOptional()
+  appLanguage: string;
 }
 
 export class LoginReqDto {

@@ -226,7 +226,7 @@ export class AuthService implements IAuthService {
 
       const hashedPassword = await Hash.make(newPassword);
       await this.userRepository.findOneAndUpdate(
-        { userId },
+        { _id: userId },
         { $set: { password: hashedPassword } },
       );
       return null;

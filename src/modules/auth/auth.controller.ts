@@ -40,7 +40,14 @@ import { Auth } from 'src/decorators/auth.decorator';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
+
+  @Get('health-check')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({})
+  async healthCheck() {
+    return `Musaro App Backend Running on PORT ${process.env.PORT}`;
+  }
 
   @Get('user-name/:username')
   @HttpCode(HttpStatus.OK)

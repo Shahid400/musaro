@@ -6,7 +6,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder } from '@nestjs/swagger';
 import { extractErrorMessages } from '@shared/constants';
 import { toTitleCase } from './shared/utils/naming-case.function';
 import { SwaggerService } from '@shared/utils';
@@ -47,7 +47,7 @@ async function bootstrap() {
   const documentConfig = new DocumentBuilder()
     .setTitle(
       `Musaro App - API Gateway (${toTitleCase(
-        config.get('NODE_ENV') || 'development',
+        config.get('APP_ENV') || 'development',
       )})`,
     )
     .setDescription(
