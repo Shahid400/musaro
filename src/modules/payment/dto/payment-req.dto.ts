@@ -95,17 +95,22 @@ export class CreatePaymentReqDto {
 }
 
 export class MoyasarCallbackDto {
-  @ApiProperty({example: '79cced57-9deb-4c4b-8f48-59c124f79688', required: true})
+  @ApiProperty({example: '79cced57-9deb-4c4b-8f48-59c124f79688', required: false})
   @IsString()
   @IsNotEmpty()
   id: string;
 
-  @ApiProperty({example: 'paid', required: true})
+  @ApiProperty({example: 'paid', required: false})
   @IsString()
   @IsNotEmpty()
   status: string;
 
-  @ApiProperty({example: 'Succeeded', required: true})
+  @ApiProperty({example: '100', required: false})
+  @IsString()
+  @IsNotEmpty()
+  amount:string;
+
+  @ApiProperty({example: 'Succeeded', required: false})
   @IsString()
   @IsNotEmpty()
   message: string;
