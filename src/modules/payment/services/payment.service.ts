@@ -41,7 +41,7 @@ export class PaymentService {
 
   async processCallback(payload: any): Promise<void> {
     try {
-      await this.paymentRepository.findOne(
+      await this.paymentRepository.findOneAndUpdate(
         {
           userId: '65cab57d047f7ea9601da3a3',
         },
