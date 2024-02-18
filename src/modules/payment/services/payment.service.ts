@@ -48,7 +48,8 @@ export class PaymentService {
           transactionId: id,
         },
         { $set: { 
-          paymentStatus: status === 'APPROVED' ? PaymentStatus.SUCCESS : PaymentStatus.FAILED
+          paymentStatus: status === 'APPROVED' ? PaymentStatus.SUCCESS : PaymentStatus.FAILED,
+          description: message
         } },
       );
     } catch (error) {
