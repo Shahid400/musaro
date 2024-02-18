@@ -5,6 +5,7 @@ import { MoyasarConfigService } from '../utils';
 import { Observable, firstValueFrom } from 'rxjs';
 import { IListPaymentsQueryParams } from '../interfaces';
 import { PaymentRepository } from '../repositories/payment.repository';
+import { PaymentStatus } from '@shared/constants';
 
 @Injectable()
 export class PaymentService {
@@ -12,7 +13,7 @@ export class PaymentService {
     private http: HttpService,
     private moyasarConfigService: MoyasarConfigService,
     private paymentRepository: PaymentRepository,
-  ) {}
+  ) { }
 
   async create(payload: any) {
     try {
@@ -39,17 +40,19 @@ export class PaymentService {
     }
   }
 
-  async processCallback(payload: any): Promise<void> {
+  async processCallback(payload: any) {
     try {
-      await this.paymentRepository.findOneAndUpdate(
+      const { id, status, amount, message } = payload;
+      return await this.paymentRepository.findOneAndUpdate(
         {
-          userId: '65cab57d047f7ea9601da3a3',
+          transactionId: id,
         },
-        { $set: { metadata: payload } },
+        { $set: { 
+          paymentStatus: status === 'APPROVED' ? PaymentStatus.SUCCESS : PaymentStatus.FAILED
+        } },
       );
-      return null;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
 
