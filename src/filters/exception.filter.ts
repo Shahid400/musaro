@@ -63,7 +63,7 @@ export class ExceptionsFilter implements ExceptionFilter {
         {
           data: null,
           message: 'Contact Developer.',
-          errors: err.message,
+          errors: [err.message],
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -143,8 +143,7 @@ export class ExceptionsFilter implements ExceptionFilter {
     switch (true) {
       case Array.isArray(exception?.response?.message):
         return exception?.response?.message[0];
-      case exception?.name == 'AxiosError' &&
-        !!exception?.response?.data?.message:
+      case !!exception?.response?.data?.message:
         return exception?.response?.data?.message;
       case Object.keys(EXCEPTION_MESSAGES).includes(exception?.name):
         return EXCEPTION_MESSAGES[exception?.name];
@@ -154,9 +153,7 @@ export class ExceptionsFilter implements ExceptionFilter {
       case exception?.message?.includes(' JSON '):
         return 'Invalid Request Body';
       default:
-        return exception.message
-          ?.replace(/group/i, 'Role')
-          .replace('Password did not conform with policy: ', '');
+        return exception?.message || 'Bad Request';
     }
   }
 
@@ -171,7 +168,7 @@ export class ExceptionsFilter implements ExceptionFilter {
     switch (true) {
       case Array.isArray(exception.errors):
         return exception.errors;
-      case !!exception?.response?.data.errors:
+      case !!exception?.response?.data?.errors:
         return Array.isArray(exception?.response?.data?.errors)
           ? exception?.response?.data?.errors
           : [exception?.response?.data?.errors];
