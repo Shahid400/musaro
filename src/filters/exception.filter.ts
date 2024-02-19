@@ -20,7 +20,7 @@ const EXCEPTION_MESSAGES = {
 export class ExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger();
 
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) { }
+  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exceptionData: any, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost;
@@ -66,7 +66,7 @@ export class ExceptionsFilter implements ExceptionFilter {
           message: 'Contact Developer.',
           errors: [err.message],
         },
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -86,35 +86,35 @@ export class ExceptionsFilter implements ExceptionFilter {
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(NotAuthorized|Unauthorized)/i)
+        )?.match(/(NotAuthorized|Unauthorized)/i),
       ):
         return HttpStatus.UNAUTHORIZED;
       case Boolean(
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(notfound|found)/i)
+        )?.match(/(notfound|found)/i),
       ):
         return HttpStatus.NOT_FOUND;
       case Boolean(
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(invalid|must|should)/i)
+        )?.match(/(invalid|must|should)/i),
       ):
         return HttpStatus.BAD_REQUEST;
       case Boolean(
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(already|exists)/i)
+        )?.match(/(already|exists)/i),
       ):
         return HttpStatus.CONFLICT;
       case Boolean(
         (typeof exception?.message == 'string'
           ? exception?.message
           : exception?.name
-        )?.match(/(token|revoked)/i)
+        )?.match(/(token|revoked)/i),
       ):
         return HttpStatus.UNAUTHORIZED;
       default:
@@ -201,13 +201,13 @@ export class ExceptionsFilter implements ExceptionFilter {
     if (!noLogStatus.includes(httpStatus) && !noLogMessages.includes(message)) {
       this.logger.error(
         message?.charAt(0).toUpperCase() + message?.slice(1),
-        exceptionTitle?.replace('Exception', '')
+        exceptionTitle?.replace('Exception', ''),
       );
 
       exception?.stack &&
         this.logger.error(
           '    at ' +
-          exception?.stack?.split('    at ')?.slice(1).join('    at ')
+            exception?.stack?.split('    at ')?.slice(1).join('    at '),
         );
     }
   }
