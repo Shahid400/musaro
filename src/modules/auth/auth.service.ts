@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { IUser, User, UserRepository } from '../user';
 import { JwtService } from '@nestjs/jwt';
-import { ResponseMessage } from '@shared/constants';
+import { ResponseMessage, UserRole } from '@shared/constants';
 import { Hash, generateOtpWithExpiry } from '@shared/utils';
 import { IOTP } from '@shared/interfaces';
 import {
@@ -49,7 +49,8 @@ export class AuthService implements IAuthService {
 
   async signup(payload: ISignup) {
     try {
-      const { username, mobile, password } = payload;
+      const { username, mobile, password, role, appLanguage, ...restPayload } =
+        payload;
 
       // Check if username or mobile already exists
       const existingUser = await this.userRepository.findOne(
@@ -73,17 +74,31 @@ export class AuthService implements IAuthService {
         generateOtpWithExpiry(),
       ]);
 
-      // Create user
-      const newUser = await this.userRepository.create({
-        ...payload,
+      const userData: User = {
+        ...restPayload,
+        mobile,
         username,
         password: hashedPassword,
-        otp,
-      });
+        role,
+        metadata: { otp },
+      };
+      if (appLanguage) userData.metadata.appLanguage = appLanguage;
+      if (role === UserRole.PROVIDER)
+        userData.metadata.isProfileCompleted = false;
+
+      // Create user
+      const newUser = await this.userRepository.create(userData);
 
       // Omit sensitive fields from response
-      const { password: _, otp: __, ...response } = newUser;
-      return response;
+      const {
+        password: _,
+        // metadata: { otp: __, ...metadata }, // temporarily added for F.E testing
+        ...response
+      } = newUser;
+      return {
+        ...response,
+        // metadata
+      };
     } catch (error) {
       throw error;
     }
@@ -93,21 +108,31 @@ export class AuthService implements IAuthService {
     try {
       const { username, password, role } = payload;
       const user = await this.userRepository.findOne(
-        { username, role, isActive: true },
-        { otp: 0 },
+        { username, role },
+        {},
         { notFoundThrowError: false },
       );
+
       if (!user || !(await Hash.compare(password, user?.password))) {
         throw new BadRequestException(
           ResponseMessage.INVALID_USERNAME_OR_PASSWORD,
         );
       }
-      if (!user?.isVerified) {
+
+      const { metadata } = user;
+      if (!metadata || !metadata.isActive) {
+        throw new ForbiddenException(ResponseMessage.NON_ACTIVE_ACCOUNT);
+      }
+
+      if (!metadata.isVerified) {
         const { mobile } = user;
         await this.resendOtp({ mobile });
         throw new ForbiddenException(ResponseMessage.NON_VERIFIED_ACCOUNT);
       }
+
+      // Omit sensitive fields from user object
       delete user.password;
+
       return {
         accessToken: this.jwtService.sign(
           { username: user.username, sub: user._id },
@@ -130,7 +155,12 @@ export class AuthService implements IAuthService {
         {
           mobile,
         },
-        { $set: { otp: otp, isVerified: false } },
+        {
+          $set: {
+            'metadata.otp': otp,
+            'metadata.isVerified': false,
+          },
+        },
       );
       return null;
     } catch (error) {
@@ -144,10 +174,15 @@ export class AuthService implements IAuthService {
       const response = await this.userRepository.findOneAndUpdate(
         {
           mobile: mobile,
-          'otp.code': otpCode,
-          'otp.expiresAt': { $gt: new Date() }, // Check if the OTP is not expired
+          'metadata.otp.code': otpCode,
+          'metadata.otp.expiresAt': { $gt: new Date() }, // Check if the OTP is not expired
         },
-        { $set: { otp: null, isVerified: true } },
+        {
+          $set: {
+            'metadata.otp': null,
+            'metadata.isVerified': true,
+          },
+        },
         { notFoundThrowError: false },
       );
       if (!response) throw new BadRequestException(ResponseMessage.INVALID_OTP);
@@ -164,10 +199,11 @@ export class AuthService implements IAuthService {
         secret: `${process.env.JWT_SECRET_KEY}`,
       });
       if (!decoded || !decoded?.sub)
-        throw new UnauthorizedException('Invalid Token');
+        throw new UnauthorizedException(ResponseMessage.INVALID_TOKEN);
+
       const user = await this.userRepository.findOne({
         username: decoded?.username,
-        isActive: true,
+        'metadata.isActive': true,
       });
       const { password, ...result } = user;
       return result;
@@ -180,7 +216,7 @@ export class AuthService implements IAuthService {
     try {
       const { mobile } = payload;
       const user = await this.userRepository.findOne(
-        { mobile, isActive: true },
+        { mobile, 'metadata.isActive': true },
         { _id: 1, mobile: 1 },
       );
       const otp = generateOtpWithExpiry();
@@ -188,7 +224,7 @@ export class AuthService implements IAuthService {
       // TODO: Send OTP to user's mobile
       await this.userRepository.findOneAndUpdate(
         { _id: user?._id },
-        { $set: { otp: otp } },
+        { $set: { 'metadata.otp': otp } },
       );
       return null;
     } catch (error) {
@@ -201,7 +237,7 @@ export class AuthService implements IAuthService {
       const { mobile, password } = payload;
       const hashedPassword = await Hash.make(password);
       await this.userRepository.findOneAndUpdate(
-        { mobile, isActive: true },
+        { mobile, 'metadata.isActive': true },
         { $set: { password: hashedPassword } },
       );
       return null;
@@ -214,7 +250,7 @@ export class AuthService implements IAuthService {
     try {
       const { userId, oldPassword, newPassword } = payload;
       const user = await this.userRepository.findOne(
-        { _id: userId, isActive: true },
+        { _id: userId, 'metadata.isActive': true },
         { password: 1 },
         { notFoundThrowError: false },
       );

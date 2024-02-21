@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { ResponseMessage, UserRole } from '@shared/constants';
 import { IUpdateProviderProfile, IUpdateCustomerProfile } from '../interfaces';
+import { S3Service } from '@shared/services';
 
 @Injectable()
 export class ProviderService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private s3: S3Service,
+  ) {}
 
   async get(payload: { userId: string }) {
     try {
@@ -39,11 +43,18 @@ export class ProviderService {
 
   async updateProfile(payload: IUpdateProviderProfile) {
     try {
-      const { userId, ...restPayload } = payload;
+      const { _id, ...restPayload } = payload;
+
+      if (restPayload?.idPicture) {
+        const url = `users/${_id}/identity/{uuid}`;
+        restPayload.idPicture = (
+          await this.s3.uploadFile(restPayload.idPicture, url)
+        )?.url;
+      }
 
       const response = await this.userRepository.findOneAndUpdate(
         {
-          _id: userId,
+          _id,
           role: UserRole.PROVIDER,
         },
         { $set: { serviceDetail: restPayload } },

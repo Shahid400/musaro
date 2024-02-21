@@ -33,7 +33,7 @@ export class CustomerService {
         },
         { $set: { ...restPayload } },
       );
-      const { password, otp, ...rest } = response;
+      const { password, ...rest } = response;
       return rest;
     } catch (error) {
       throw error;

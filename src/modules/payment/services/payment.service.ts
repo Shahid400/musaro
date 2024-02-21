@@ -13,15 +13,14 @@ export class PaymentService {
     private http: HttpService,
     private moyasarConfigService: MoyasarConfigService,
     private paymentRepository: PaymentRepository,
-  ) { }
+  ) {}
 
   async create(payload: any) {
     try {
-      const requestConfig = this.moyasarConfigService.get(
-        'POST',
-        'payments',
-        payload,
-      );
+      const requestConfig = this.moyasarConfigService.get('POST', 'payments', {
+        ...payload,
+        amount: payload.amount * 100,
+      });
 
       const { data } = await firstValueFrom(this.http.request(requestConfig));
       const paymentData = {
@@ -40,17 +39,27 @@ export class PaymentService {
     }
   }
 
-  async processCallback(payload: any) {
+  async updatePaymentStatus(payload: any) {
     try {
-      const { id, status, amount, message } = payload;
+      const { id, message } = payload;
+      const requestConfig = this.moyasarConfigService.get(
+        'GET',
+        `payments/${id}`,
+      );
+      const { data } = await firstValueFrom(this.http.request(requestConfig));
       return await this.paymentRepository.findOneAndUpdate(
         {
-          transactionId: id,
+          transactionId: data.id,
         },
-        { $set: { 
-          paymentStatus: status === 'paid' ? PaymentStatus.SUCCESS : PaymentStatus.FAILED,
-          description: message
-        } },
+        {
+          $set: {
+            paymentStatus:
+              data.status === 'paid'
+                ? PaymentStatus.SUCCESS
+                : PaymentStatus.FAILED,
+            description: message,
+          },
+        },
       );
     } catch (error) {
       throw error;

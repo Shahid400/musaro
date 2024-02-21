@@ -7,7 +7,6 @@ import mongoose, { SchemaTypes, Types } from 'mongoose';
 @Schema({
   _id: false,
   versionKey: false,
-  // timestamps: false,
 })
 class ProviderDetail extends AbstractSchema<string> {
   @Prop({ type: String, required: true })
@@ -36,25 +35,48 @@ class ProviderDetail extends AbstractSchema<string> {
 }
 const ProviderDetailSchema = SchemaFactory.createForClass(ProviderDetail);
 
-// @Schema({
-//   _id: false,
-//   versionKey: false,
-//   // timestamps: false,
-// })
-// class PaymentDetail extends AbstractSchema<string> {
-//   @Prop({ type: String, required: true })
-//   paymentPlan?: string;
+@Schema({
+  _id: false,
+  versionKey: false,
+  timestamps: false,
+})
+class UserMetaData extends AbstractSchema<string> {
+  @Prop({
+    type: String,
+    required: false,
+    default: AppLanguage.ENGLISH,
+    enum: AppLanguage,
+  })
+  appLanguage?: string;
 
-//   @Prop({ type: String, required: true })
-//   paymentOption?: string;
+  @Prop({
+    type: {
+      code: { type: Number, required: true },
+      expiresAt: { type: Date, required: true },
+    },
+  })
+  otp: IOTP;
 
-//   @Prop({ type: Date, required: true })
-//   subscriptionStart?: Date;
+  @Prop({ type: Boolean, required: false, default: false })
+  isVerified?: boolean;
 
-//   @Prop({ type: Date, required: true })
-//   subscriptionEnd?: Date;
-// }
-// const PaymentDetailSchema = SchemaFactory.createForClass(PaymentDetail);
+  @Prop({ type: Boolean, required: false })
+  isProfileCompleted?: boolean;
+
+  @Prop({ type: Boolean, required: false, default: true })
+  isActive?: boolean;
+
+  @Prop({ type: Boolean, required: false, default: false })
+  isApproved?: boolean;
+
+  @Prop({
+    type: String,
+    required: false,
+    default: ProfileStatus.APPROVAL_PENDING,
+  })
+  reason?: string;
+}
+const UserMetaDataSchema = SchemaFactory.createForClass(UserMetaData);
 
 @Schema({
   collection: 'users',
@@ -83,44 +105,13 @@ export class User extends AbstractSchema<string> {
   @Prop({ type: String, required: false })
   profilePicture?: string;
 
-  @Prop({ type: Boolean, required: false, default: false })
-  isVerified?: boolean;
-
-  @Prop({ type: Boolean, required: false, default: true })
-  isActive?: boolean;
-
-  @Prop({ type: Boolean, required: false, default: false })
-  isApproved?: boolean;
-
-  @Prop({
-    type: String,
-    required: false,
-    default: ProfileStatus.APPROVAL_PENDING,
-  })
-  reason?: string;
-
-  @Prop({
-    type: String,
-    required: false,
-    default: AppLanguage.ENGLISH,
-  })
-  appLanguage?: string;
-
-  @Prop({
-    type: {
-      code: { type: Number, required: true },
-      expiresAt: { type: Date, required: true },
-    },
-  })
-  otp: IOTP;
+  @Prop({ type: UserMetaDataSchema, required: false })
+  metadata?: UserMetaData;
 
   // Below fields are specifically for service provider
 
   @Prop({ type: ProviderDetailSchema, required: false })
   serviceDetail?: ProviderDetail;
-
-  // @Prop({ type: PaymentDetailSchema, required: false })
-  // paymentDetail?: PaymentDetail;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

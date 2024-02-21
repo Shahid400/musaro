@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { GeneralModule } from './modules/general/general.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PaymentModule } from './modules/payment/payment.module';
     AuthModule,
     UserModule,
     PaymentModule,
+    GeneralModule,
   ],
   controllers: [],
   providers: [

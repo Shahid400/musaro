@@ -62,5 +62,7 @@ export enum ResponseMessage {
   USERNAME_ALREADY_EXISTS = 'user name not available',
   MOBILE_ALREADY_EXISTS = 'an account against this mobile already exists',
   INVALID_OTP = 'invalid or expired OTP',
-  NON_VERIFIED_ACCOUNT = 'Non-verified Account! Verify the OTP sent to mobile',
+  INVALID_TOKEN = 'Invalid Token',
+  NON_ACTIVE_ACCOUNT = 'Account disabled',
+  NON_VERIFIED_ACCOUNT = 'Account not verified! Verify the OTP sent to mobile',
 }

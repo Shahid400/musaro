@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Put,
+  UploadedFile,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from 'src/decorators/auth.decorator';
@@ -15,6 +16,7 @@ import {
   UpdateProviderProfileResDto,
 } from '../dto';
 import { ProviderService } from '../services';
+import { ApiFormData } from 'src/decorators';
 
 @Controller('provider')
 @ApiTags('Provider')
@@ -24,15 +26,23 @@ export class ProviderController {
 
   @Auth()
   @Put('profile')
+  @ApiFormData({
+    single: true,
+    fieldName: 'idPicture',
+    fileTypes: ['png', 'jpeg', 'jpg'],
+    errorMessage: 'Invalid image file entered.',
+  })
   @HttpCode(HttpStatus.OK)
   @ApiCreatedResponse({ type: UpdateProviderProfileResDto })
   async updateProfile(
     @Req() req: any,
     @Body() payload: UpdateProviderProfileReqDto,
+    @UploadedFile() idPicture: any,
   ) {
-    const { _id: userId } = req?.user;
+    const { _id } = req?.user;
     return await this.providerService.updateProfile({
-      userId,
+      _id,
+      idPicture,
       ...payload,
     });
   }

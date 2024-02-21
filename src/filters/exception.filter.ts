@@ -9,11 +9,10 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 
 const EXCEPTION_MESSAGES = {
-  UserNotFoundException: 'Invalid email or password.',
-  NotAuthorizedException: 'Invalid email or password.',
+  UserNotFoundException: 'Invalid username or password.',
+  NotAuthorizedException: 'Invalid username or password.',
   CodeDeliveryFailureException:
-    'Unable to send an email, Kindly contact to support.',
-  LimitExceededException: 'Unable to send an email, Kindly contact to support.',
+    'Unable to send code, Kindly contact to support.',
 };
 
 @Catch()
@@ -78,6 +77,8 @@ export class ExceptionsFilter implements ExceptionFilter {
     switch (true) {
       case exception instanceof HttpException:
         return exception.getStatus();
+      case !!exception?.response?.status:
+        return exception?.response?.status;
       case !!exception?.error?.statusCode:
         return exception?.error?.statusCode;
       case !!exception?.['$metadata']?.httpStatusCode:

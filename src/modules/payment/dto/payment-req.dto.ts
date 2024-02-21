@@ -2,13 +2,12 @@ import {
   IsOptional,
   IsString,
   IsISO8601,
-  IsObject,
   ValidateNested,
   IsNotEmpty,
   IsBoolean,
   IsInt,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 class SourceDto {
@@ -66,7 +65,6 @@ export class CreatePaymentReqDto {
   @IsInt()
   @IsNotEmpty()
   @Type(() => Number)
-  @Transform(({ value }) => value * 100)
   readonly amount: number;
 
   @ApiProperty({ type: String, example: 'SAR' })
@@ -94,23 +92,16 @@ export class CreatePaymentReqDto {
   readonly metadata?: Record<string, any>;
 }
 
-export class MoyasarCallbackDto {
-  @ApiProperty({example: '79cced57-9deb-4c4b-8f48-59c124f79688', required: false})
+export class UpdatePaymentStatusReqDto {
+  @ApiProperty({
+    example: '79cced57-9deb-4c4b-8f48-59c124f79688',
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   id: string;
 
-  @ApiProperty({example: 'paid', required: false})
-  @IsString()
-  @IsNotEmpty()
-  status: string;
-
-  @ApiProperty({example: '100', required: false})
-  @IsString()
-  @IsNotEmpty()
-  amount:string;
-
-  @ApiProperty({example: 'Succeeded', required: false})
+  @ApiProperty({ example: 'Succeeded', required: true })
   @IsString()
   @IsNotEmpty()
   message: string;

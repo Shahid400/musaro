@@ -1,9 +1,8 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { ResponseMessage, UserRole } from '@shared/constants';
+import { ApiProperty } from '@nestjs/swagger';
+import { AppLanguage, ResponseMessage, UserRole } from '@shared/constants';
 import { Transform, Type } from 'class-transformer';
 import {
   IsEnum,
-  IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -72,8 +71,8 @@ export class SignUpReqDto {
   @IsNotEmpty()
   city: string;
 
-  @ApiProperty({ example: 'english' })
-  @IsString()
+  @ApiProperty({ example: AppLanguage.ENGLISH })
+  @IsEnum(AppLanguage)
   @IsOptional()
   appLanguage: string;
 }

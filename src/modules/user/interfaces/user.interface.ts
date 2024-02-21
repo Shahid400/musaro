@@ -8,7 +8,7 @@ export interface IUser {
 }
 
 export interface IUpdateProviderProfile {
-  userId: string;
+  _id: string;
   type: string;
   service: string;
   serviceDescription: string;
