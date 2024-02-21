@@ -22,6 +22,7 @@
       "@shared/constants": ["src/shared/constants"],
       "@shared/dto": ["src/shared/dto"],
       "@shared/repositories": ["src/shared/repositories"],
+      "@shared/services": ["src/shared/services"],
       "@shared/utils": ["src/shared/utils"],
       "@shared/interfaces": ["src/shared/interfaces"],
       "@auth": ["src/modules/auth"],
