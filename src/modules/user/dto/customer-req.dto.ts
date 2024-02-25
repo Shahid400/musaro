@@ -8,11 +8,11 @@ export class UpdateCustomerProfileReqDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ type: String, example: '' })
-  @IsString()
-  @ValidateIf((dto) => !dto.name && !dto.city)
-  @IsNotEmpty()
-  username: string;
+  // @ApiProperty({ type: String, example: '' })
+  // @IsString()
+  // @ValidateIf((dto) => !dto.name && !dto.city)
+  // @IsNotEmpty()
+  // username: string;
 
   @ApiProperty({ type: String, example: '' })
   @IsString()

@@ -12,8 +12,8 @@ class ProviderDetail extends AbstractSchema<string> {
   @Prop({ type: String, required: true })
   type?: string;
 
-  @Prop({ type: String, required: true })
-  service?: string;
+  @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'professions' })
+  professionId?: string;
 
   @Prop({ type: String, required: true })
   serviceDescription?: string;

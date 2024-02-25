@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString, ValidateIf } from 'class-validator';
+import {
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
 import { ProviderType } from '@shared/constants';
 import { ApiSingleFile } from 'src/decorators';
+import { PaginationDto } from '@shared/dto';
 
 export class UpdateProviderProfileReqDto {
   @ApiProperty({ type: String, example: ProviderType.INDIVIDUAL })
@@ -10,9 +17,9 @@ export class UpdateProviderProfileReqDto {
   type: string;
 
   @ApiProperty({ type: String, example: '' })
-  @IsString()
+  @IsMongoId()
   @IsNotEmpty()
-  service: string;
+  professionId: string;
 
   @ApiProperty({ type: String, example: '' })
   @IsString()
@@ -42,4 +49,11 @@ export class UpdateProviderProfileReqDto {
 
   @ApiSingleFile({ required: true })
   idPicture: any;
+}
+
+export class ListProvidersReqDto extends PaginationDto {
+  @ApiProperty({ example: '', required: true })
+  @IsMongoId()
+  @IsNotEmpty()
+  professionId: string;
 }

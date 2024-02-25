@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { ResponseMessage, UserRole } from '@shared/constants';
-import { IUpdateProviderProfile, IUpdateCustomerProfile } from '../interfaces';
+import {
+  IUpdateProviderProfile,
+  IUpdateCustomerProfile,
+  IListProviders,
+} from '../interfaces';
 import { S3Service } from '@shared/services';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class ProviderService {
@@ -61,6 +66,33 @@ export class ProviderService {
         { projection: { serviceDetail: 1 } },
       );
       return response?.serviceDetail;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async listProviders(payload: IListProviders) {
+    try {
+      const { limit, offset, professionId } = payload;
+      return await this.userRepository.paginate({
+        filterQuery: {
+          'serviceDetail.professionId': new Types.ObjectId(professionId),
+        },
+        limit,
+        offset,
+        projection: {
+          name: 1,
+          mobile: 1,
+          username: 1,
+          city: 1,
+          profilePicture: 1,
+          'serviceDetail.type': 1,
+          'serviceDetail.serviceDescription': 1,
+          'serviceDetail.yearsOfExperience': 1,
+          'serviceDetail.whatsapp': 1,
+          'serviceDetail.officeNumber': 1,
+        },
+      });
     } catch (error) {
       throw error;
     }

@@ -36,7 +36,7 @@ export class Subscription extends AbstractSchema<string> {
     enum: SubscriptionStatus,
     default: SubscriptionStatus.INACTIVE,
   })
-  status: string;
+  status?: string;
 }
 
 export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);

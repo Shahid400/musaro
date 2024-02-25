@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AppLanguage } from '@shared/constants';
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { ApiSingleFile } from 'src/decorators';
 
 export class UpdateAppLanguageReqDto {
   @ApiProperty({ example: AppLanguage.ENGLISH })

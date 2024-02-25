@@ -7,11 +7,13 @@ import {
   HttpStatus,
   Put,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from 'src/decorators/auth.decorator';
 import {
   GetProviderProfileResDto,
+  ListProvidersReqDto,
   UpdateProviderProfileReqDto,
   UpdateProviderProfileResDto,
 } from '../dto';
@@ -31,6 +33,7 @@ export class ProviderController {
     fieldName: 'idPicture',
     fileTypes: ['png', 'jpeg', 'jpg'],
     errorMessage: 'Invalid image file entered.',
+    required: true,
   })
   @HttpCode(HttpStatus.OK)
   @ApiCreatedResponse({ type: UpdateProviderProfileResDto })
@@ -53,5 +56,13 @@ export class ProviderController {
   @ApiCreatedResponse({ type: GetProviderProfileResDto })
   async get(@Req() req: any) {
     return await this.providerService.get({ userId: req?.user?._id });
+  }
+
+  // @Auth()
+  @Get('list')
+  @HttpCode(HttpStatus.OK)
+  @ApiCreatedResponse({ type: GetProviderProfileResDto })
+  async listProviders(@Query() query: ListProvidersReqDto) {
+    return await this.providerService.listProviders({ ...query });
   }
 }
