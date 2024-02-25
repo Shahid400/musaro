@@ -33,43 +33,26 @@ export class PaymentController {
     return await this.paymentService.create(createPaymentDto);
   }
 
-  @Patch('payment-status')
-  @HttpCode(HttpStatus.OK)
-  async processCallback(@Query() query: UpdatePaymentStatusReqDto) {
-    return await this.paymentService.updatePaymentStatus(query);
-  }
+  // @Patch('payment-status')
+  // @HttpCode(HttpStatus.OK)
+  // async processCallback(@Query() query: UpdatePaymentStatusReqDto) {
+  //   return await this.paymentService.updatePaymentStatus(query);
+  // }
 
   // @Auth()
   @Get('list')
   @HttpCode(HttpStatus.OK)
   // @ApiCreatedResponse({ type: ResponseDto })
   async listPayments(
-    @Req() req: any,
+    // @Req() req: any,
     @Query() query: ListPaymentsQueryParamsDto,
   ) {
     return await this.paymentService.listPayments(query);
   }
 
-  @Get()
-  findAll() {
-    return this.paymentService.findAll();
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updatePaymentDto: CreatePaymentReqDto,
-  ) {
-    return this.paymentService.update(+id, updatePaymentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paymentService.remove(+id);
+  @HttpCode(HttpStatus.OK)
+  async fetchPayment(@Param('id') id: string) {
+    return await this.paymentService.fetchPayment(id);
   }
 }

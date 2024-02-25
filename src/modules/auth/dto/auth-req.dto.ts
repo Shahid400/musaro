@@ -89,11 +89,11 @@ export class LoginReqDto {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty({ example: UserRole.CUSTOMER })
-  @IsString()
-  @IsEnum(UserRole)
-  @IsNotEmpty()
-  role: string;
+  // @ApiProperty({ example: UserRole.CUSTOMER })
+  // @IsString()
+  // @IsEnum(UserRole)
+  // @IsNotEmpty()
+  // role: string;
 }
 
 export class ResendOtpReqDto {

@@ -20,7 +20,7 @@ export enum PaymentOption {
   APPLE_PAY = 'APPLE_PAY',
 }
 
-export enum SubscriptionPlan {
+export enum SubscriptionType {
   MONTHLY = 'MONTHLY',
   YEARLY = 'YEARLY',
 }

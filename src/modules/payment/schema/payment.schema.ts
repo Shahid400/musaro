@@ -38,8 +38,8 @@ export class Payment extends AbstractSchema<string> {
   @Prop({ type: Date, required: true })
   paymentDate: Date; // Date and time of the payment
 
-  @Prop({ type: Object, required: false })
-  metadata?: any; // Additional metadata related to the payment
+  // @Prop({ type: Object, required: false })
+  // metadata?: any; // Additional metadata related to the payment
 }
 
 export const PaymentSchema = SchemaFactory.createForClass(Payment);

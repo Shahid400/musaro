@@ -15,6 +15,14 @@ export class PaymentService {
     private paymentRepository: PaymentRepository,
   ) {}
 
+  async createPayment(payload: any) {
+    try {
+      return await this.paymentRepository.create(payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async create(payload: any) {
     try {
       const requestConfig = this.moyasarConfigService.get('POST', 'payments', {
@@ -23,16 +31,16 @@ export class PaymentService {
       });
 
       const { data } = await firstValueFrom(this.http.request(requestConfig));
-      const paymentData = {
-        userId: '65cab57d047f7ea9601da3a3',
-        amount: payload?.amount,
-        paymentOption: 'VISA',
-        paymentType: 'SUBSCRIPTION',
-        transactionId: data?.id,
-        description: 'subscription fee',
-        paymentDate: new Date(),
-      };
-      await this.paymentRepository.create(paymentData);
+      // const paymentData = {
+      //   userId: '65cab57d047f7ea9601da3a3',
+      //   amount: payload?.amount,
+      //   paymentOption: 'VISA',
+      //   paymentType: 'SUBSCRIPTION',
+      //   transactionId: data?.id,
+      //   description: 'subscription fee',
+      //   paymentDate: new Date(),
+      // };
+      // await this.paymentRepository.create(paymentData);
       return data;
     } catch (error) {
       throw error;
@@ -77,19 +85,16 @@ export class PaymentService {
     return await firstValueFrom(this.http.request(requestConfig));
   }
 
-  findAll() {
-    return `This action returns all payment`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
-  }
-
-  update(id: number, updatePaymentDto: any) {
-    return `This action updates a #${id} payment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
+  async fetchPayment(id: string) {
+    try {
+      const requestConfig = this.moyasarConfigService.get(
+        'GET',
+        `payments/${id}`,
+      );
+      const { data } = await firstValueFrom(this.http.request(requestConfig));
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 }

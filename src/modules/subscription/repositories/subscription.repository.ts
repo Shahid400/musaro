@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AbstractRepository } from '@shared/abstracts';
 import { Connection, Model } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { ISubscriptionRepository } from '../interfaces/repository.interface';
-import { Subscription } from '../schemas/subscription.schema';
+import { Subscription } from '../schemas';
+import { ISubscriptionRepository } from '../interfaces';
 
 @Injectable()
 export class SubscriptionRepository

@@ -9,6 +9,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { GeneralModule } from './modules/general/general.module';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { GeneralModule } from './modules/general/general.module';
     UserModule,
     PaymentModule,
     GeneralModule,
+    SubscriptionModule,
   ],
   controllers: [],
   providers: [

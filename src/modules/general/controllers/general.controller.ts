@@ -10,13 +10,10 @@ import {
   HttpStatus,
   Req,
 } from '@nestjs/common';
-import { GeneralService } from './general.service';
+import { GeneralService } from '../services/general.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from 'src/decorators';
-import {
-  UpdateAppLanguageReqDto,
-  UpdateAppLanguageResDto,
-} from './dto';
+import { UpdateAppLanguageReqDto, UpdateAppLanguageResDto } from '../dto';
 
 @Controller('general')
 @ApiTags('General')

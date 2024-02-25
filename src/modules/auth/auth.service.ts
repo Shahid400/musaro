@@ -20,12 +20,14 @@ import {
   IVerifyOtp,
   IVerifyToken,
 } from './interfaces';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
+    private config: ConfigService,
   ) {}
 
   async checkUserName(payload: { username: string }) {
@@ -106,9 +108,9 @@ export class AuthService implements IAuthService {
 
   async login(payload: ILogin) {
     try {
-      const { username, password, role } = payload;
+      const { username, password } = payload;
       const user = await this.userRepository.findOne(
-        { username, role },
+        { username },
         {},
         { notFoundThrowError: false },
       );
@@ -134,12 +136,10 @@ export class AuthService implements IAuthService {
       delete user.password;
 
       return {
-        accessToken: this.jwtService.sign(
-          { username: user.username, sub: user._id },
-          {
-            expiresIn: process.env.JWT_EXPIRATION_TIME,
-          },
-        ),
+        accessToken: this.jwtService.sign({
+          username: user.username,
+          sub: user._id,
+        }),
         user,
       };
     } catch (error) {
@@ -196,7 +196,7 @@ export class AuthService implements IAuthService {
     try {
       const { token } = payload;
       const decoded = this.jwtService.verify(token, {
-        secret: `${process.env.JWT_SECRET_KEY}`,
+        secret: this.config.get('JWT_SECRET_KEY'),
       });
       if (!decoded || !decoded?.sub)
         throw new UnauthorizedException(ResponseMessage.INVALID_TOKEN);

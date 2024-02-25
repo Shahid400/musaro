@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../user';
-import { IUpdateAppLanguage } from './interfaces';
+import { UserRepository } from '../../user';
+import { IUpdateAppLanguage } from '../interfaces';
 
 @Injectable()
 export class GeneralService {

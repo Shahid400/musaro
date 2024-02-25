@@ -23,10 +23,13 @@ import { MoyasarConfigService } from './utils';
     }),
   ],
   exports: [
+    PaymentService,
     PaymentRepository,
     // MoyasarConfigService
   ],
-  controllers: [PaymentController],
+  controllers: [
+    PaymentController
+  ],
   providers: [MoyasarConfigService, PaymentService, PaymentRepository],
 })
 export class PaymentModule {}
