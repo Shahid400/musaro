@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { AppLanguage } from '@shared/constants';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { PaginationDto } from '@shared/dto';
+import { IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 import { ApiSingleFile } from 'src/decorators';
 
 export class UpdateAppLanguageReqDto {
@@ -9,3 +10,19 @@ export class UpdateAppLanguageReqDto {
   @IsNotEmpty()
   appLanguage: string;
 }
+
+export class AddCityReqDto {
+  @ApiProperty({ example: '' })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}
+
+export class CityIdReqDto {
+  @ApiProperty({ example: '', required: true })
+  @IsMongoId()
+  @IsNotEmpty()
+  cityId: string;
+}
+
+export class ListCitiesReqDto extends PartialType(PaginationDto) {}

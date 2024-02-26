@@ -11,12 +11,16 @@ import {
   Req,
   UploadedFile,
   Query,
+  Put,
 } from '@nestjs/common';
 import { GeneralService } from '../services/general.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ApiFormData, Auth } from 'src/decorators';
 import {
+  AddCityReqDto,
+  CityIdReqDto,
   CreateProfessionReqDto,
+  ListCitiesReqDto,
   ListProfessionsReqDto,
   ProfessionQueryReqDto,
   UpdateAppLanguageReqDto,
@@ -60,7 +64,7 @@ export class GeneralController {
     errorMessage: 'Invalid image file entered.',
     required: true,
   })
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   async createProfession(
     @Body() payload: CreateProfessionReqDto,
     @UploadedFile() img: any,
@@ -101,5 +105,32 @@ export class GeneralController {
   @HttpCode(HttpStatus.OK)
   async listProfessions(@Query() query: ListProfessionsReqDto) {
     return await this.generalService.listProfessions({ ...query });
+  }
+
+  @Post('city')
+  @HttpCode(HttpStatus.CREATED)
+  async addCity(@Body() payload: AddCityReqDto) {
+    return await this.generalService.addCity({ ...payload });
+  }
+
+  @Put('city/:cityId')
+  @HttpCode(HttpStatus.OK)
+  async updateCity(
+    @Param() param: CityIdReqDto,
+    @Body() payload: AddCityReqDto,
+  ) {
+    return await this.generalService.updateCity({ ...param, ...payload });
+  }
+
+  @Get('city')
+  @HttpCode(HttpStatus.OK)
+  async listCities(@Query() query?: ListCitiesReqDto) {
+    return await this.generalService.listCities({ ...query });
+  }
+
+  @Delete('city/:cityId')
+  @HttpCode(HttpStatus.OK)
+  async deleteCity(@Param() param: CityIdReqDto) {
+    return await this.generalService.deleteCity({ ...param });
   }
 }
