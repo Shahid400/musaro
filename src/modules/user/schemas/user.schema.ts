@@ -2,7 +2,7 @@ import { SchemaFactory, Prop, Schema } from '@nestjs/mongoose';
 import { AbstractSchema } from '@shared/abstracts';
 import { AppLanguage, ProfileStatus, UserRole } from '@shared/constants';
 import { IOTP } from '@shared/interfaces';
-import mongoose, { SchemaTypes, Types } from 'mongoose';
+import { SchemaTypes } from 'mongoose';
 
 @Schema({
   _id: false,
@@ -14,6 +14,9 @@ class ProviderDetail extends AbstractSchema<string> {
 
   @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'professions' })
   professionId?: string;
+
+  @Prop({ type: String, required: true })
+  businessName?: string;
 
   @Prop({ type: String, required: true })
   serviceDescription?: string;

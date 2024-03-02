@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { GeneralModule } from './modules/general/general.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { JobModule } from './modules/job/job.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
     PaymentModule,
     GeneralModule,
     SubscriptionModule,
+    JobModule,
   ],
   controllers: [],
   providers: [

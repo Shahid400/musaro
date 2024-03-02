@@ -2,6 +2,8 @@ export interface IUpdateProviderProfile {
   _id: string;
   type: string;
   professionId: string;
+  businessName: string;
+  city: string;
   serviceDescription: string;
   yearsOfExperience: string;
   idNumber: string;

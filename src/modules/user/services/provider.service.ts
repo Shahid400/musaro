@@ -48,7 +48,7 @@ export class ProviderService {
 
   async updateProfile(payload: IUpdateProviderProfile) {
     try {
-      const { _id, ...restPayload } = payload;
+      const { _id, city, ...restPayload } = payload;
 
       if (restPayload?.idPicture) {
         const url = `users/${_id}/identity/{uuid}`;
@@ -62,7 +62,12 @@ export class ProviderService {
           _id,
           role: UserRole.PROVIDER,
         },
-        { $set: { serviceDetail: restPayload } },
+        {
+          $set: {
+            ...(city && { city }),
+            serviceDetail: restPayload,
+          },
+        },
         { projection: { serviceDetail: 1 } },
       );
       return response?.serviceDetail;
