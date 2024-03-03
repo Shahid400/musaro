@@ -5,5 +5,13 @@ export interface ICreateJob {
   title: string;
   description: string;
   city: string;
+  projectOwnerMobile: string;
+  projectOwnerWhatsapp: string;
   media: MediaObject[];
+}
+
+export interface IListJobs {
+  userId: string;
+  limit: number;
+  offset: number;
 }

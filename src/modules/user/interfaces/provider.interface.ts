@@ -17,3 +17,10 @@ export interface IListProviders {
   limit: number;
   offset: number;
 }
+
+export interface IProviderAvailability {
+  userId: string;
+  unAvailable: boolean;
+  unAvailableStartDate?: string;
+  unAvailableEndDate?: string;
+}

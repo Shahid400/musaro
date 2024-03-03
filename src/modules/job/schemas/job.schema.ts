@@ -20,14 +20,20 @@ export class Job extends AbstractSchema<string> {
   @Prop({ type: String, required: true })
   city: string;
 
+  @Prop({ type: String, required: true, trim: true })
+  projectOwnerMobile: string;
+
+  @Prop({ type: String, required: true, trim: true })
+  projectOwnerWhatsapp: string;
+
   @Prop({ type: [{ type: String }], required: true })
   media: string[];
 
   @Prop({ type: Boolean, required: false, default: true })
-  isVisible: boolean;
+  isVisible?: boolean;
 
   @Prop({ type: Boolean, required: false, default: false })
-  isApproved: boolean;
+  isApproved?: boolean;
 }
 
 export const JobSchema = SchemaFactory.createForClass(Job);

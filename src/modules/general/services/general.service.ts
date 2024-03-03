@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../../user';
 import {
+  ICreateAttachment,
   ICreateProfession,
   IUpdateAppLanguage,
   IUpdateProfession,
 } from '../interfaces';
 import { S3Service } from '@shared/services';
-import { CityRepository, ProfessionRepository } from '../repositories';
+import {
+  AttachmentRepository,
+  CityRepository,
+  ProfessionRepository,
+} from '../repositories';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class GeneralService {
   constructor(
+    private readonly attachmentRepository: AttachmentRepository,
     private readonly professionRepository: ProfessionRepository,
     private readonly cityRepository: CityRepository,
     private readonly userRepository: UserRepository,
@@ -125,6 +132,24 @@ export class GeneralService {
     try {
       const { cityId } = payload;
       return await this.cityRepository.findOneAndDelete({ _id: cityId });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createAttachment(payload: ICreateAttachment) {
+    try {
+      const { userId, module, attachment } = payload;
+      console.log('1 ====> ', dayjs().format('HH:mm:ss'));
+      const s3Url = (
+        await this.s3.uploadFile(attachment, `${module}/${userId}/{uuid}`)
+      )?.url;
+      console.log('2 ====> ', dayjs().format('HH:mm:ss'));
+
+      return await this.attachmentRepository.create({
+        attachment: s3Url,
+        createdBy: userId,
+      });
     } catch (error) {
       throw error;
     }

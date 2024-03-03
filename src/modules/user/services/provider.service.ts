@@ -5,6 +5,7 @@ import {
   IUpdateProviderProfile,
   IUpdateCustomerProfile,
   IListProviders,
+  IProviderAvailability,
 } from '../interfaces';
 import { S3Service } from '@shared/services';
 import { Types } from 'mongoose';
@@ -24,7 +25,7 @@ export class ProviderService {
         {
           _id: userId,
         },
-        { password: 0, otp: 0 },
+        { password: 0, 'metadata.otp': 0 },
       );
     } catch (error) {
       throw error;
@@ -38,8 +39,11 @@ export class ProviderService {
       return await this.userRepository.findOne(
         {
           _id: userId,
+          role: UserRole.PROVIDER,
+          'metadata.isActive': true,
+          'metadata.isApproved': true,
         },
-        { password: 0, otp: 0 },
+        { password: 0, 'metadata.otp': 0 },
       );
     } catch (error) {
       throw error;
@@ -82,6 +86,9 @@ export class ProviderService {
       return await this.userRepository.paginate({
         filterQuery: {
           'serviceDetail.professionId': new Types.ObjectId(professionId),
+          role: UserRole.PROVIDER,
+          'metadata.isActive': true,
+          'metadata.isApproved': true,
         },
         limit,
         offset,
@@ -98,6 +105,33 @@ export class ProviderService {
           'serviceDetail.officeNumber': 1,
         },
       });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async setAvailability(payload: IProviderAvailability) {
+    try {
+      const {
+        userId,
+        unAvailable,
+        unAvailableStartDate = null,
+        unAvailableEndDate = null,
+      } = payload;
+
+      await this.userRepository.findOneAndUpdate(
+        {
+          _id: userId,
+        },
+        {
+          $set: {
+            'serviceDetail.unAvailable': unAvailable,
+            'serviceDetail.unAvailableStartDate': unAvailableStartDate,
+            'serviceDetail.unAvailableEndDate': unAvailableEndDate,
+          },
+        },
+      );
+      return null;
     } catch (error) {
       throw error;
     }

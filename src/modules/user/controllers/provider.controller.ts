@@ -8,12 +8,21 @@ import {
   Put,
   UploadedFile,
   Query,
+  Patch,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiAcceptedResponse,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Auth } from 'src/decorators/auth.decorator';
 import {
+  AvailabilityReqDto,
   GetProviderProfileResDto,
   ListProvidersReqDto,
+  ListProvidersResDto,
+  ProviderAvailabilityResDto,
   UpdateProviderProfileReqDto,
   UpdateProviderProfileResDto,
 } from '../dto';
@@ -35,8 +44,8 @@ export class ProviderController {
     errorMessage: 'Invalid image file entered.',
     required: true,
   })
-  @HttpCode(HttpStatus.OK)
-  @ApiCreatedResponse({ type: UpdateProviderProfileResDto })
+  @HttpCode(HttpStatus.ACCEPTED)
+  @ApiAcceptedResponse({ type: UpdateProviderProfileResDto })
   async updateProfile(
     @Req() req: any,
     @Body() payload: UpdateProviderProfileReqDto,
@@ -53,16 +62,28 @@ export class ProviderController {
   @Auth()
   @Get('profile')
   @HttpCode(HttpStatus.OK)
-  @ApiCreatedResponse({ type: GetProviderProfileResDto })
+  @ApiOkResponse({ type: GetProviderProfileResDto })
   async get(@Req() req: any) {
     return await this.providerService.get({ userId: req?.user?._id });
   }
 
-  // @Auth()
+  @Auth()
   @Get('list')
   @HttpCode(HttpStatus.OK)
-  @ApiCreatedResponse({ type: GetProviderProfileResDto })
+  @ApiOkResponse({ type: ListProvidersResDto })
   async listProviders(@Query() query: ListProvidersReqDto) {
     return await this.providerService.listProviders({ ...query });
+  }
+
+  @Auth()
+  @Patch('available')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @ApiAcceptedResponse({ type: ProviderAvailabilityResDto })
+  async setAvailability(@Req() req: any, @Query() query: AvailabilityReqDto) {
+    const { _id: userId } = req?.user;
+    return await this.providerService.setAvailability({
+      userId,
+      ...query,
+    });
   }
 }

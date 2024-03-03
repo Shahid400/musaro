@@ -29,9 +29,42 @@ export class GetProviderProfileResDto extends ApiResponseDto {
       },
     },
   })
-  data: string;
+  data: object;
 
   @ApiProperty({ example: 'Provider Profile Data' })
+  message: string;
+}
+
+export class ListProvidersResDto extends ApiResponseDto {
+  @ApiProperty({
+    example: {
+      users: [
+        {
+          _id: '65d681d84c1b9832184519cb',
+          name: 'provider 02',
+          mobile: '03123456711',
+          username: 'provider02',
+          city: 'city',
+          serviceDetail: {
+            type: 'INDIVIDUAL',
+            serviceDescription: 'Sr. Plumber',
+            yearsOfExperience: '11',
+            whatsapp: '3123456789',
+            officeNumber: '90078601',
+          },
+        },
+      ],
+      meta: {
+        page: 1,
+        pages: 1,
+        limit: 10,
+        total: 1,
+      },
+    },
+  })
+  data: object;
+
+  @ApiProperty({ example: 'List of Providers' })
   message: string;
 }
 
@@ -48,8 +81,18 @@ export class UpdateProviderProfileResDto extends ApiResponseDto {
       officeNumber: '090078601',
     },
   })
-  data: string;
+  data: object;
 
   @ApiProperty({ example: 'Provider Profile Updated' })
+  message: string;
+}
+
+export class ProviderAvailabilityResDto extends ApiResponseDto {
+  @ApiProperty({
+    example: null,
+  })
+  data: object;
+
+  @ApiProperty({ example: 'Provider Availability Updated' })
   message: string;
 }

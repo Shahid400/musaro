@@ -53,6 +53,10 @@ export enum FileContentTypes {
   JSON = 'application/json',
 }
 
+export enum NotificationType {
+  REQUEST = 'request',
+}
+
 export enum ResponseMessage {
   INVALID_PASSWORD = `Invalid Password. Use 8-15 characters with a mix of letters, numbers & symbols`,
   INVALID_NAME = `Invalid name`,

@@ -35,6 +35,21 @@ class ProviderDetail extends AbstractSchema<string> {
 
   @Prop({ type: String, required: false })
   officeNumber?: string;
+
+  @Prop({ type: Boolean, required: false, default: false })
+  unAvailable?: boolean;
+
+  @Prop({ type: Date, required: false })
+  unAvailableStartDate?: Date;
+
+  @Prop({ type: Date, required: false })
+  unAvailableEndDate?: Date;
+
+  @Prop({ type: Boolean, required: false, default: false })
+  isLocationLimited?: boolean;
+
+  @Prop({ type: [String], required: false })
+  limitedCities?: string[];
 }
 const ProviderDetailSchema = SchemaFactory.createForClass(ProviderDetail);
 
@@ -78,6 +93,12 @@ class UserMetaData extends AbstractSchema<string> {
     default: ProfileStatus.APPROVAL_PENDING,
   })
   reason?: string;
+
+  @Prop({ type: Boolean, required: false, default: true })
+  isNotificationOn?: boolean;
+
+  @Prop({ type: String, required: false })
+  fcmToken?: string;
 }
 const UserMetaDataSchema = SchemaFactory.createForClass(UserMetaData);
 

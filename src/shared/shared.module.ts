@@ -1,7 +1,8 @@
 import { S3 } from '@aws-sdk/client-s3';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Service } from './services';
+import { FirebaseNotificationService, S3Service } from './services';
+import * as admin from 'firebase-admin';
 
 @Module({
   imports: [],
@@ -19,8 +20,23 @@ import { S3Service } from './services';
         }),
       inject: [ConfigService],
     },
+    {
+      provide: 'FIREBASE_ADMIN',
+      useFactory: (config: ConfigService) => {
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: `${config.get('PROJECT_ID')}`,
+            clientEmail: `${config.get('CLIENT_EMAIL')}`,
+            privateKey: `${config.get('PRIVATE_KEY')?.replace(/\\n/g, '\n')}`,
+          }),
+        });
+        return admin;
+      },
+      inject: [ConfigService],
+    },
     S3Service,
+    FirebaseNotificationService,
   ],
-  exports: [S3Service],
+  exports: [S3Service, FirebaseNotificationService],
 })
-export class SharedModule {}
+export class SharedModule { }

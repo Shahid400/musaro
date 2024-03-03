@@ -1,9 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationDto } from '@shared/dto';
 import { MediaObject } from '@shared/interfaces';
-import { Transform } from 'class-transformer';
-import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsBoolean,
+  IsMongoId,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
 import { ApiMultipleFiles } from 'src/decorators';
 
+export class JobAttachmentDto {
+  media: Array<MediaObject>;
+}
 export class CreateJobReqDto {
   @ApiProperty({ type: String, example: 'title', required: true })
   @IsString()
@@ -20,8 +30,43 @@ export class CreateJobReqDto {
   @IsNotEmpty()
   city: string;
 
+  @ApiProperty({ type: String, example: '123456789', required: true })
+  @IsString()
+  @IsNotEmpty()
+  projectOwnerMobile: string;
+
+  @ApiProperty({ type: String, example: '123456789', required: true })
+  @IsString()
+  @IsNotEmpty()
+  projectOwnerWhatsapp: string;
+
+  // @ApiProperty({ type: Array, example: [''], required: true })
+  // @IsArray()
+  // @IsNotEmpty()
+  // media: string[];
+
   @ApiMultipleFiles({ required: true })
-  media: Array<MediaObject>;
+  attachments: Array<MediaObject>;
 }
 
-export class UpdateJobReqDto {}
+export class UpdateJobReqDto {
+  @ApiProperty({ type: Boolean, example: false, required: true })
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  @IsBoolean()
+  isVisible: boolean;
+}
+
+export class GetJobReqDto {
+  @ApiProperty({ type: String, example: '', required: true })
+  @IsMongoId()
+  @IsNotEmpty()
+  jobId: string;
+}
+
+export class ListJobsReqDto extends PaginationDto {
+  @ApiProperty({ type: String, example: '', required: true })
+  @IsMongoId()
+  @IsNotEmpty()
+  userId: string;
+}

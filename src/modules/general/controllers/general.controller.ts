@@ -19,7 +19,9 @@ import { ApiFormData, Auth } from 'src/decorators';
 import {
   AddCityReqDto,
   CityIdReqDto,
+  CreateAttachmentReqDto,
   CreateProfessionReqDto,
+  JobAttachmentDto,
   ListCitiesReqDto,
   ListProfessionsReqDto,
   ProfessionQueryReqDto,
@@ -133,4 +135,26 @@ export class GeneralController {
   async deleteCity(@Param() param: CityIdReqDto) {
     return await this.generalService.deleteCity({ ...param });
   }
+
+  // @Post('attachment')
+  // @ApiFormData({
+  //   single: true,
+  //   fieldName: 'attachment',
+  //   fileTypes: ['png', 'jpeg', 'jpg', 'mp4', 'avi', 'mov'],
+  //   errorMessage: 'Invalid file entered.',
+  //   required: true,
+  // })
+  // @HttpCode(HttpStatus.CREATED)
+  // // @ApiCreatedResponse({ type: CreateJobResDto })
+  // async createAttachment(
+  //   @Req() req: any,
+  //   @Body() payload: CreateAttachmentReqDto,
+  //   @UploadedFile() attachment: any,
+  // ) {
+  //   return await this.generalService.createAttachment({
+  //     userId: '65d681d84c1b9832184519cb', // req?.user?._id,
+  //     ...payload,
+  //     attachment,
+  //   });
+  // }
 }
