@@ -1,7 +1,7 @@
 import { SchemaFactory, Prop, Schema } from '@nestjs/mongoose';
 import { AbstractSchema } from '@shared/abstracts';
 import { SubscriptionType, SubscriptionStatus } from '@shared/constants';
-import { SchemaTypes } from 'mongoose';
+import { SchemaTypes, Types } from 'mongoose';
 
 @Schema({
   collection: 'subscriptions',
@@ -12,8 +12,11 @@ export class Subscription extends AbstractSchema<string> {
   @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'users' })
   userId: string; // User ID who subscribed
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: Types.ObjectId, required: true, ref: 'subscription-plans' })
   planId: string;
+
+  @Prop({ type: Types.ObjectId, required: false, ref: 'workshops' })
+  workshopId?: string;
 
   // @Prop({ type: String, required: true, enum: SubscriptionType })
   // plan: string;
@@ -21,7 +24,7 @@ export class Subscription extends AbstractSchema<string> {
   // @Prop({ type: Number, required: true })
   // amount: number;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: Types.ObjectId, required: true, ref: 'payments' })
   paymentId: string;
 
   @Prop({ type: Date, required: true })

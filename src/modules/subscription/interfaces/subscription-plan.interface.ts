@@ -1,4 +1,5 @@
 export interface ISubscriptionPlan {
+  type: string;
   plan: string;
   amount: number;
   discount?: number;

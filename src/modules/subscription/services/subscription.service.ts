@@ -10,6 +10,10 @@ import {
   SubscriptionType,
 } from '@shared/constants';
 import { UserRepository } from 'src/modules/user';
+import {
+  ICreateProviderSubscription,
+  ICreateSubscription,
+} from '../interfaces';
 
 @Injectable()
 export class SubscriptionService {
@@ -37,11 +41,17 @@ export class SubscriptionService {
     return { startDate: today, endDate: endDate };
   }
 
-  async createSubscription(payload: any) {
+  async createSubscription(payload: ICreateSubscription) {
     try {
-      const { planId, transactionId, paymentOption } = payload;
-      let { userId } = payload;
-      userId = userId.toString();
+      const {
+        userId,
+        planId,
+        transactionId,
+        paymentOption,
+        paymentType,
+        workshopId,
+      } = payload;
+
       const [subscriptionPlan, paymentDetail] = await Promise.all([
         this.subscriptionPlanService.getSubscriptionPlan({ _id: planId }),
         this.paymentService.fetchPayment(transactionId),
@@ -63,25 +73,37 @@ export class SubscriptionService {
         userId,
         amount,
         paymentOption,
-        paymentType: PaymentType.SUBSCRIPTION,
+        paymentType,
         paymentStatus: PaymentStatus.SUCCESS,
         transactionId,
         paymentDate: new Date(),
       };
-      const payment = await this.paymentService.createPayment(paymentData);
-
-      const { startDate, endDate } = await this.getSubscriptionDates(plan);
-
-      const subscriptionData = {
+      const [payment, { startDate, endDate }] = await Promise.all([
+        this.paymentService.createPayment(paymentData),
+        this.getSubscriptionDates(plan),
+      ]);
+      return await this.subscriptionRepository.create({
         userId,
         planId,
+        ...(workshopId && { workshopId }),
         paymentId: payment?._id.toString(),
         startDate,
         endDate,
         status: SubscriptionStatus.ACTIVE,
-      };
-      const subscription =
-        await this.subscriptionRepository.create(subscriptionData);
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createProviderSubscription(payload: ICreateProviderSubscription) {
+    try {
+      const { userId } = payload;
+      const subscription = await this.createSubscription({
+        ...payload,
+        paymentType: PaymentType.SUBSCRIPTION,
+      });
+
       await this.userRepository.findOneAndUpdate(
         { _id: userId },
         { $set: { 'metadata.isProfileCompleted': true } },

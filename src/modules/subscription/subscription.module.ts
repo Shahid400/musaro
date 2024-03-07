@@ -10,7 +10,12 @@ import {
 import { PaymentModule } from '../payment';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SharedModule } from 'src/shared/shared.module';
-import { Subscription, SubscriptionPlan, SubscriptionPlanSchema, SubscriptionSchema } from './schemas';
+import {
+  Subscription,
+  SubscriptionPlan,
+  SubscriptionPlanSchema,
+  SubscriptionSchema,
+} from './schemas';
 
 @Module({
   imports: [
@@ -30,6 +35,11 @@ import { Subscription, SubscriptionPlan, SubscriptionPlanSchema, SubscriptionSch
     SubscriptionRepository,
     SubscriptionPlanRepository,
   ],
-  exports: [SubscriptionRepository, SubscriptionPlanRepository],
+  exports: [
+    SubscriptionRepository,
+    SubscriptionPlanRepository,
+    SubscriptionService,
+    SubscriptionPlanService,
+  ],
 })
 export class SubscriptionModule {}

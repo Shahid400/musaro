@@ -20,6 +20,11 @@ export enum PaymentOption {
   APPLE_PAY = 'APPLE_PAY',
 }
 
+export enum SubscriptionPlanType {
+  PROVIDER = 'PROVIDER',
+  WORKSHOP = 'WORKSHOP',
+}
+
 export enum SubscriptionType {
   MONTHLY = 'MONTHLY',
   YEARLY = 'YEARLY',
@@ -55,6 +60,11 @@ export enum FileContentTypes {
 
 export enum NotificationType {
   REQUEST = 'request',
+}
+
+export enum WorkshopStatus {
+  OPEN = 'OPEN',
+  CLOSED = 'CLOSED',
 }
 
 export enum ResponseMessage {

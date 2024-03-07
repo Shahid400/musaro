@@ -20,11 +20,14 @@ export class SubscriptionController {
   @Post('')
   @HttpCode(HttpStatus.OK)
   // @ApiCreatedResponse({ type: UpdateProviderProfileResDto })
-  async subscription(
+  async createSubscription(
     @Req() req: any,
     @Body() payload: CreateSubscriptionReqDto,
   ) {
-    const userId = req?.user?._id;
-    return this.subscriptionService.createSubscription({ userId, ...payload });
+    const userId = (req?.user?._id).toString;
+    return this.subscriptionService.createProviderSubscription({
+      userId,
+      ...payload,
+    });
   }
 }

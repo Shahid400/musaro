@@ -1,6 +1,6 @@
 import { SchemaFactory, Prop, Schema } from '@nestjs/mongoose';
 import { AbstractSchema } from '@shared/abstracts';
-import { SubscriptionType } from '@shared/constants';
+import { SubscriptionPlanType, SubscriptionType } from '@shared/constants';
 
 @Schema({
   collection: 'subscription-plans',
@@ -8,6 +8,9 @@ import { SubscriptionType } from '@shared/constants';
   timestamps: true,
 })
 export class SubscriptionPlan extends AbstractSchema<string> {
+  @Prop({ type: String, required: true, enum: SubscriptionPlanType })
+  type: string;
+
   @Prop({ type: String, required: true, enum: SubscriptionType })
   plan: string;
 

@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { SubscriptionType } from '@shared/constants';
+import { SubscriptionPlanType, SubscriptionType } from '@shared/constants';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
@@ -12,6 +12,15 @@ import {
 } from 'class-validator';
 
 export class CreateSubscriptionPlanReqDto {
+  @ApiProperty({
+    type: String,
+    example: SubscriptionPlanType.PROVIDER,
+    required: true,
+  })
+  @IsEnum(SubscriptionPlanType)
+  @IsNotEmpty()
+  type: string;
+
   @ApiProperty({
     type: String,
     example: SubscriptionType.MONTHLY,
