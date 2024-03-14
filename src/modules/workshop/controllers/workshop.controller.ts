@@ -11,7 +11,7 @@ import {
   Query,
   Param,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { ApiFormData, Auth } from 'src/decorators';
 import { WorkshopService } from '../services/workshop.service';
 import { MultipleAttachmentDto } from '@shared/dto';
@@ -19,6 +19,7 @@ import { CreateWorkshopReqDto, ListWorkshopReqDto, UpdateWorkshopReqDto, Worksho
 
 @Controller('workshop')
 @ApiTags('Workshop')
+@ApiBearerAuth()
 export class WorkshopController {
   constructor(private readonly workshopService: WorkshopService) {}
 
@@ -39,7 +40,7 @@ export class WorkshopController {
     @Body() payload: CreateWorkshopReqDto,
     @UploadedFiles() { media }: MultipleAttachmentDto,
   ) {
-    const userId = '65d681d84c1b9832184519cb'; // req?.user?._id;
+    const userId = req?.user?._id;
     return this.workshopService.createWorkshop({
       userId,
       ...payload,
@@ -47,12 +48,14 @@ export class WorkshopController {
     });
   }
 
+  @Auth()
   @Get('/list')
   @HttpCode(HttpStatus.OK)
   async listWorkshops(@Query() query: ListWorkshopReqDto) {
     return await this.workshopService.listWorkshops({ ...query });
   }
 
+  @Auth()
   @Put('/:workshopId')
   @HttpCode(HttpStatus.OK)
   async updateWorkshop(
@@ -62,6 +65,7 @@ export class WorkshopController {
     return await this.workshopService.updateWorkshop({ ...param, ...payload });
   }
 
+  @Auth()
   @Get('/:workshopId')
   @HttpCode(HttpStatus.OK)
   async getWorkshop(@Param() param: WorkshopIdDto) {
