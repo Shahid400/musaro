@@ -11,9 +11,6 @@ import {
 } from 'class-validator';
 import { ApiMultipleFiles } from 'src/decorators';
 
-export class JobAttachmentDto {
-  media: Array<MediaObject>;
-}
 export class CreateJobReqDto {
   @ApiProperty({ type: String, example: 'title', required: true })
   @IsString()

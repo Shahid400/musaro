@@ -2,7 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   NotFoundException,
-} from '@nestjs/common';
+} from '@nestjs/common'
 import {
   FilterQuery,
   Model,
@@ -17,35 +17,28 @@ import {
   AggregateOptions,
   QueryOptions,
   UpdateWithAggregationPipeline,
-} from 'mongoose';
-import { AbstractSchema } from '../schema/abstract.schema';
-import * as pluralize from 'pluralize';
-import { toSentenceCase } from '@shared/utils';
-import {
-  IAbstractRepository,
-  IPaginateOptions,
-  IPaginatedResult,
-  NestedKeys,
-} from '@shared/interfaces';
-export abstract class AbstractRepository<TDocument extends AbstractSchema>
-  implements IAbstractRepository<TDocument>
-{
-  private friendlyName: string;
-  private singleName: string;
+} from 'mongoose'
+import { AbstractSchema } from '../schema/abstract.schema'
+import * as pluralize from 'pluralize'
+import { toSentenceCase } from '@shared/utils'
+import { IAbstractRepository, IPaginateOptions, IPaginatedResult, NestedKeys } from '@shared/interfaces'
+export abstract class AbstractRepository<TDocument extends AbstractSchema> implements IAbstractRepository<TDocument> {
+  private friendlyName: string
+  private singleName: string
 
   constructor(
     protected readonly model: Model<TDocument>,
-    private readonly connection: Connection,
+    private readonly connection: Connection
   ) {
     this.friendlyName = this.model.collection.name.replace(
       /[^a-zA-Z0-9]+(.)/g,
-      (_, chr) => chr.toUpperCase(),
-    );
+      (_, chr) => chr.toUpperCase()
+    )
     this.singleName = pluralize.singular(
       toSentenceCase(
-        this.friendlyName.replace(/([A-Z]+)*([A-Z][a-z])/g, '$1 $2'),
-      ),
-    );
+        this.friendlyName.replace(/([A-Z]+)*([A-Z][a-z])/g, '$1 $2')
+      )
+    )
   }
 
   async create(document: TDocument, options?: SaveOptions): Promise<TDocument> {
@@ -53,113 +46,113 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
       const createdDocument = new this.model({
         ...(!document._id && { _id: new Types.ObjectId() }),
         ...document,
-      });
+      })
       return (
         await createdDocument.save(options)
-      ).toJSON() as unknown as TDocument;
+      ).toJSON() as unknown as TDocument
     } catch (err) {
       if (err.message.includes('duplicate')) {
-        throw new ConflictException(`${this.singleName} already exists.`);
+        throw new ConflictException(`${this.singleName} already exists.`)
       }
       throw new BadRequestException(
-        `Invalid ${this.singleName.toLowerCase()} data entered, ${err.message}`,
-      );
+        `Invalid ${this.singleName.toLowerCase()} data entered, ${err.message}`
+      )
     }
   }
 
   async createMany(
     documents: Omit<TDocument, '_id'>[],
-    options?: InsertManyOptions,
+    options?: InsertManyOptions
   ): Promise<TDocument[]> {
     try {
-      const insertedDocuments = await this.model.insertMany(documents, options);
-      return insertedDocuments as unknown as TDocument[];
+      const insertedDocuments = await this.model.insertMany(documents, options)
+      return insertedDocuments as unknown as TDocument[]
     } catch (err) {
       throw new BadRequestException(
-        `Invalid ${this.singleName.toLowerCase()} data entered, ${err.message}`,
-      );
+        `Invalid ${this.singleName.toLowerCase()} data entered, ${err.message}`
+      )
     }
   }
 
   async delete(filterQuery?: FilterQuery<TDocument>): Promise<TDocument[]> {
     try {
       const deletedDocument = await Promise.resolve(
-        this.model.deleteOne(filterQuery || {}),
-      );
+        this.model.deleteOne(filterQuery || {})
+      )
       if (deletedDocument.deletedCount === 0) {
-        throw new NotFoundException(`${this.singleName} not found.`);
+        throw new NotFoundException(`${this.singleName} not found.`)
       }
-      return deletedDocument as any;
+      return deletedDocument as any
     } catch (err) {
       if (err instanceof NotFoundException) {
-        throw err;
+        throw err
       }
       throw new BadRequestException(
-        `Invalid ${this.singleName.toLowerCase()} data entered.`,
-      );
+        `Invalid ${this.singleName.toLowerCase()} data entered.`
+      )
     }
   }
 
   async deleteMany(
     filterQuery: FilterQuery<TDocument>,
     ids?: string[],
-    column: string = '_id',
+    column: string = '_id'
   ): Promise<any> {
     try {
-      filterQuery = filterQuery || {};
+      filterQuery = filterQuery || {}
       const query = {
         ...filterQuery,
         ...(ids && column && { [column]: { $in: ids } }),
-      };
-      const deletedDocument = await Promise.resolve(
-        this.model.deleteMany(query),
-      );
-      if (deletedDocument.deletedCount === 0) {
-        throw new NotFoundException(`${this.singleName} not found.`);
       }
-      return deletedDocument as any;
+      const deletedDocument = await Promise.resolve(
+        this.model.deleteMany(query)
+      )
+      if (deletedDocument.deletedCount === 0) {
+        throw new NotFoundException(`${this.singleName} not found.`)
+      }
+      return deletedDocument as any
     } catch (err) {
       if (err instanceof NotFoundException) {
-        throw err;
+        throw err
       }
       throw new BadRequestException(
-        `Error ${this.friendlyName.toLowerCase()}, ${err.message}.`,
-      );
+        `Error ${this.friendlyName.toLowerCase()}, ${err.message}.`
+      )
     }
   }
 
   async deleteManyWithoutException(
     filterQuery: FilterQuery<TDocument>,
     ids?: string[],
-    column: string = '_id',
+    column: string = '_id'
   ): Promise<any> {
     try {
-      filterQuery = filterQuery || {};
+      filterQuery = filterQuery || {}
       const query = {
         ...filterQuery,
         ...(ids && column && { [column]: { $in: ids } }),
-      };
+      }
       const deletedDocument = await Promise.resolve(
-        this.model.deleteMany(query),
-      );
-      return deletedDocument as any;
+        this.model.deleteMany(query)
+      )
+      return deletedDocument as any
     } catch (err) {
       throw new BadRequestException(
-        `Error ${this.friendlyName.toLowerCase()}, ${err.message}.`,
-      );
+        `Error ${this.friendlyName.toLowerCase()}, ${err.message}.`
+      )
     }
   }
 
   async findOneAndDelete(
-    filterQuery: FilterQuery<TDocument>,
+    filterQuery: FilterQuery<TDocument>
   ): Promise<TDocument> {
     const document = await Promise.resolve(
-      this.model.findOneAndDelete(filterQuery, {}),
-    );
+      this.model.findOneAndDelete(filterQuery, {})
+    )
     if (!document) {
-      throw new NotFoundException(`${this.singleName} not found.`);
+      throw new NotFoundException(`${this.singleName} not found.`)
     }
-    return document;
+    return document
   }
 
   async findOne(
@@ -168,41 +161,41 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
     options:
       | QueryOptions<TDocument>
       | { notFoundThrowError: string | boolean } = {
-      notFoundThrowError: true,
-    },
+        notFoundThrowError: true,
+      }
   ): Promise<TDocument> {
-    const { notFoundThrowError, ...remainingOptions } = options;
+    const { notFoundThrowError, ...remainingOptions } = options
     const document = await Promise.resolve(
       this.model.findOne(
         filterQuery,
         projection || {},
-        remainingOptions || { lean: true },
-      ),
-    );
+        remainingOptions || { lean: true }
+      )
+    )
 
     if (!document && notFoundThrowError) {
       throw new NotFoundException(
         typeof options?.notFoundThrowError == 'string'
           ? options?.notFoundThrowError
-          : `${this.singleName} not found.`,
-      );
+          : `${this.singleName} not found.`
+      )
     }
 
-    return document?.toObject();
+    return document?.toObject()
   }
 
   async updateMany(
     filterQuery: FilterQuery<TDocument>,
     updates?: UpdateQuery<TDocument> | UpdateWithAggregationPipeline,
-    options?: {},
+    options?: {}
   ): Promise<any> {
     try {
       return await Promise.resolve(
-        this.model.updateMany(filterQuery, updates || {}, options || {}),
-      );
+        this.model.updateMany(filterQuery, updates || {}, options || {})
+      )
     } catch (err) {
       if (err.message.includes('duplicate')) {
-        throw new ConflictException(`${this.singleName} already exists.`);
+        throw new ConflictException(`${this.singleName} already exists.`)
       }
     }
   }
@@ -213,8 +206,8 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
     options:
       | QueryOptions<TDocument>
       | { notFoundThrowError: string | boolean } = {
-      notFoundThrowError: true,
-    },
+        notFoundThrowError: true,
+      }
   ) {
     try {
       const document = await Promise.resolve(
@@ -222,69 +215,69 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
           lean: true,
           new: true,
           ...options,
-        }),
-      );
+        })
+      )
 
       if (!document && options.notFoundThrowError) {
         throw new NotFoundException(
           typeof options?.notFoundThrowError == 'string'
             ? options?.notFoundThrowError
-            : `${this.singleName} not found.`,
-        );
+            : `${this.singleName} not found.`
+        )
       }
-      return document;
+      return document
     } catch (err) {
-      console.log(err);
+      console.log(err)
       if (err.message.includes('duplicate')) {
-        throw new ConflictException(`${this.singleName} already exists.`);
+        throw new ConflictException(`${this.singleName} already exists.`)
       }
       if (err instanceof NotFoundException) {
-        throw err;
+        throw err
       }
       throw new BadRequestException(
-        `Invalid ${this.singleName.toLowerCase()} data entered.`,
-      );
+        `Invalid ${this.singleName.toLowerCase()} data entered.`
+      )
     }
   }
 
   async upsert(
     filterQuery: FilterQuery<TDocument>,
-    document: Partial<TDocument>,
+    document: Partial<TDocument>
   ) {
     return this.model.findOneAndUpdate(filterQuery, document, {
       lean: true,
       upsert: true,
       new: true,
-    });
+    })
   }
 
   async find(
     filterQuery?: FilterQuery<TDocument>,
     projection?: ProjectionType<TDocument>,
-    options?: QueryOptions<TDocument>,
+    options?: QueryOptions<TDocument>
   ) {
     return this.model.find(
       filterQuery || {},
       projection || {},
-      options || { lean: true },
-    );
+      options || { lean: true }
+    )
   }
 
-  async startTransaction(): Promise<any> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
-    return session;
+  async startTransaction() {
+    const session = await this.connection.startSession()
+    session.startTransaction()
+    return session
   }
 
   async aggregate(
     pipeline?: PipelineStage[],
     options?: AggregateOptions,
-    callback?: Callback<any[]>,
+    callback?: Callback<any[]>
   ) {
     return await Promise.resolve(
       // this.model.aggregate(pipeline, options, callback),
-      this.model.aggregate(pipeline, options),
-    );
+      this.model.aggregate(pipeline, options)
+    )
   }
 
   // async count(filterQuery?: FilterQuery<TDocument>) {
@@ -292,7 +285,7 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
   // }
 
   async getDetails() {
-    return await this.model.db.asPromise();
+    return await this.model.db.asPromise()
   }
 
   async paginate({
@@ -311,26 +304,26 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
     searchByCustom,
   }: IPaginateOptions<TDocument>): Promise<IPaginatedResult> {
     try {
-      let searchFilter: any[];
-      let searchByArray: string[];
+      let searchFilter: any[]
+      let searchByArray: string[]
       if (search.length) {
-        searchFilter = [];
-        const { _id, ...fieldsObject } = this.model.schema.paths;
+        searchFilter = []
+        const { _id, ...fieldsObject } = this.model.schema.paths
         searchByArray = this.getKeysWithValue(
           { ...searchBy, ...searchByCustom } ?? fieldsObject,
-          1,
-        );
+          1
+        )
         searchByArray.forEach((field) => {
           searchFilter.push({
             [field]: {
               $regex: `.*${search.toLowerCase()}.*`,
               $options: 'i',
             },
-          });
-        });
+          })
+        })
       }
-      offset = +offset;
-      limit = +limit;
+      offset = +offset
+      limit = +limit
       const query = [
         ...pipelines,
         {
@@ -340,16 +333,16 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
               Object.keys(searchFilter).length &&
               (searchMethod == 'or'
                 ? {
-                    $and: [
-                      {
-                        $or: searchFilter,
-                      },
-                    ],
-                  }
+                  $and: [
+                    {
+                      $or: searchFilter,
+                    },
+                  ],
+                }
                 : searchFilter.reduce(function (andFilter, singleFilter) {
-                    andFilter = { ...andFilter, ...singleFilter };
-                    return andFilter;
-                  }, {}))),
+                  andFilter = { ...andFilter, ...singleFilter }
+                  return andFilter
+                }, {}))),
           },
         },
         ...bottomPipelines,
@@ -369,13 +362,13 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
             data: [
               ...(!all
                 ? [
-                    {
-                      $skip: offset,
-                    },
-                    {
-                      $limit: limit ?? '$total.count',
-                    },
-                  ]
+                  {
+                    $skip: offset,
+                  },
+                  {
+                    $limit: limit ?? '$total.count',
+                  },
+                ]
                 : []),
               {
                 $addFields: {
@@ -384,10 +377,10 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
               },
               ...(projection
                 ? [
-                    {
-                      $project: projection,
-                    },
-                  ]
+                  {
+                    $project: projection,
+                  },
+                ]
                 : []),
             ],
           },
@@ -411,18 +404,18 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
             }),
           },
         },
-      ];
+      ]
 
-      const [data] = await this.model.aggregate<any>(query);
+      const [data] = await this.model.aggregate<any>(query)
       return {
         [!returnKey
           ? `${this.friendlyName[0].toLowerCase() + this.friendlyName.slice(1)}`
           : returnKey]: data?.collections || [],
         meta: {
           ...(!all && { page: data?.page, pages: data?.pages, limit }),
-          total: data?.total ?? 0,
+          total: data?.total ?? 0
         },
-      };
+      }
     } catch (err) {
       return {
         [!returnKey
@@ -432,26 +425,26 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
           ...(!all && { page: 0, pages: 0, limit }),
           total: 0,
         },
-      };
+      }
     }
   }
 
   private getKeysWithValue(obj: object, value: number): string[] {
-    const keys: string[] = [];
+    const keys: string[] = []
 
     function traverse(o: Record<string, any>, path?: string) {
       for (const key in o) {
-        const currentPath = path ? `${path}.${key}` : key;
+        const currentPath = path ? `${path}.${key}` : key
         if (o[key] === value && ['number', 'string'].includes(typeof o[key])) {
-          keys.push(currentPath);
+          keys.push(currentPath)
         }
         if (typeof o[key] === 'object') {
-          traverse(o[key], currentPath);
+          traverse(o[key], currentPath)
         }
       }
     }
 
-    traverse(obj);
-    return keys;
+    traverse(obj)
+    return keys
   }
 }

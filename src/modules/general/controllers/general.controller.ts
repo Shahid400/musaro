@@ -19,9 +19,9 @@ import { ApiFormData, Auth } from 'src/decorators';
 import {
   AddCityReqDto,
   CityIdReqDto,
-  CreateAttachmentReqDto,
+  // CreateAttachmentReqDto,
   CreateProfessionReqDto,
-  JobAttachmentDto,
+  // JobAttachmentDto,
   ListCitiesReqDto,
   ListProfessionsReqDto,
   ProfessionQueryReqDto,

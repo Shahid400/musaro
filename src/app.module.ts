@@ -34,7 +34,7 @@ import { WorkshopModule } from './modules/workshop/workshop.module';
     SubscriptionModule,
     NotificationModule,
     JobModule,
-    // WorkshopModule,
+    WorkshopModule,
   ],
   controllers: [],
   providers: [

@@ -1,3 +1,5 @@
+import { MediaObject } from '@shared/interfaces';
+
 export interface ICreateWorkshop {
   planId: string;
   transactionId: string;
@@ -13,6 +15,12 @@ export interface ICreateWorkshop {
   maxPeople: number;
   startDate: string;
   endDate: string;
-  media: [];
+  media: MediaObject[];
   userId: string;
+}
+
+export interface IListWorkshops {
+  userId?: string;
+  limit: number;
+  offset: number;
 }

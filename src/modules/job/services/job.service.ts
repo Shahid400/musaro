@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../../user';
 import { S3Service } from '@shared/services';
 import { ICreateJob, IListJobs } from '../interfaces';
 import { JobRepository } from '../repositories';

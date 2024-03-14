@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   HttpCode,
   HttpStatus,
   Req,
@@ -19,11 +17,11 @@ import { ApiFormData, Auth } from 'src/decorators';
 import {
   CreateJobReqDto,
   GetJobReqDto,
-  JobAttachmentDto,
   ListJobsReqDto,
   UpdateJobReqDto,
 } from '../dto';
 import { MediaObject } from '@shared/interfaces';
+import { MultipleAttachmentDto } from '@shared/dto';
 
 @Controller('job')
 @ApiTags('Job')
@@ -45,7 +43,7 @@ export class JobController {
   async createJob(
     @Req() req: any,
     @Body() payload: CreateJobReqDto,
-    @UploadedFiles() { media }: JobAttachmentDto,
+    @UploadedFiles() { media }: MultipleAttachmentDto,
   ) {
     return await this.jobService.createJob({
       userId: req?.user?._id,
