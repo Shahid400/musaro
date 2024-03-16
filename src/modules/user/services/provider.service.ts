@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
-import { ResponseMessage, UserRole } from '@shared/constants';
+import { UserRole } from '@shared/constants';
 import {
   IUpdateProviderProfile,
-  IUpdateCustomerProfile,
   IListProviders,
   IProviderAvailability,
 } from '../interfaces';
@@ -17,7 +16,7 @@ export class ProviderService {
     private s3: S3Service,
   ) {}
 
-  async get(payload: { userId: string }) {
+  async getProviderProfile(payload: { userId: string }) {
     try {
       const { userId } = payload;
 
@@ -32,19 +31,49 @@ export class ProviderService {
     }
   }
 
-  async getProvider(payload: { userId: string }) {
+  async getProviderDetail(payload: { userId: string }) {
     try {
-      const { userId } = payload;
-
-      return await this.userRepository.findOne(
+      const userId = new Types.ObjectId(payload?.userId);
+      const pipeline = [
         {
-          _id: userId,
-          role: UserRole.PROVIDER,
-          'metadata.isActive': true,
-          'metadata.isApproved': true,
+          $match: {
+            _id: userId,
+            role: UserRole.PROVIDER,
+            'metadata.isActive': true,
+            'metadata.isApproved': true,
+          },
         },
-        { password: 0, 'metadata.otp': 0 },
-      );
+        {
+          $lookup: {
+            from: 'jobs',
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$userId', userId] },
+                      { $eq: ['$isVisible', true] },
+                      { $eq: ['$isApproved', true] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: 'jobs',
+          },
+        },
+      ];
+      return await this.userRepository.aggregate(pipeline);
+
+      // return await this.userRepository.findOne(
+      //   {
+      //     _id: userId,
+      //     role: UserRole.PROVIDER,
+      //     'metadata.isActive': true,
+      //     'metadata.isApproved': true,
+      //   },
+      //   { password: 0, 'metadata.otp': 0 },
+      // );
     } catch (error) {
       throw error;
     }

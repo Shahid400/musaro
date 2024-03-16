@@ -57,9 +57,10 @@ export class JobService {
     }
   }
 
-  async getJob(payload: { jobId: string }) {
+  async getJob(payload: { jobId: string; role?: string }) {
     try {
       const { jobId } = payload;
+      // TODO: if role = Customer then add rating & review data in response.
       return await this.jobRepository.findOne({ _id: jobId });
     } catch (error) {
       throw error;
@@ -71,6 +72,7 @@ export class JobService {
       return await this.jobRepository.paginate({
         filterQuery: {
           userId: new Types.ObjectId(userId),
+          isApproved: true,
         },
         limit,
         offset,

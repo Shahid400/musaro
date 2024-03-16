@@ -12,7 +12,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { JobService } from '../services/job.service';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { ApiFormData, Auth } from 'src/decorators';
 import {
   CreateJobReqDto,
@@ -20,11 +20,11 @@ import {
   ListJobsReqDto,
   UpdateJobReqDto,
 } from '../dto';
-import { MediaObject } from '@shared/interfaces';
 import { MultipleAttachmentDto } from '@shared/dto';
 
 @Controller('job')
 @ApiTags('Job')
+@ApiBearerAuth()
 export class JobController {
   constructor(private readonly jobService: JobService) {}
 
@@ -52,12 +52,14 @@ export class JobController {
     });
   }
 
+  @Auth()
   @Get('/list')
   @HttpCode(HttpStatus.OK)
-  async listJobs(@Query() query: ListJobsReqDto) {
-    return await this.jobService.listJobs({ ...query });
+  async listJobs(@Req() req: any, @Query() query: ListJobsReqDto) {
+    return await this.jobService.listJobs({ userId: req?.user?._id, ...query });
   }
 
+  @Auth()
   @Put('/:jobId')
   @HttpCode(HttpStatus.OK)
   async updateJob(
@@ -67,9 +69,10 @@ export class JobController {
     return await this.jobService.updateJob({ ...param, ...payload });
   }
 
+  @Auth()
   @Get('/:jobId')
   @HttpCode(HttpStatus.OK)
-  async getJob(@Param() param: GetJobReqDto) {
-    return await this.jobService.getJob({ ...param });
+  async getJob(@Req() req: any, @Param() param: GetJobReqDto) {
+    return await this.jobService.getJob({ role: req?.user?.role, ...param });
   }
 }

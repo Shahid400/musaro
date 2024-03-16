@@ -62,8 +62,8 @@ export class GetJobReqDto {
 }
 
 export class ListJobsReqDto extends PaginationDto {
-  @ApiProperty({ type: String, example: '', required: true })
-  @IsMongoId()
-  @IsNotEmpty()
-  userId: string;
+  // @ApiProperty({ type: String, example: '', required: true })
+  // @IsMongoId()
+  // @IsNotEmpty()
+  // userId: string;
 }

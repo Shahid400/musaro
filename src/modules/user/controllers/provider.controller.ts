@@ -9,6 +9,7 @@ import {
   UploadedFile,
   Query,
   Patch,
+  Param,
 } from '@nestjs/common';
 import {
   ApiAcceptedResponse,
@@ -28,6 +29,7 @@ import {
 } from '../dto';
 import { ProviderService } from '../services';
 import { ApiFormData } from 'src/decorators';
+import { UserIdDto } from '@shared/dto';
 
 @Controller('provider')
 @ApiTags('Provider')
@@ -63,8 +65,10 @@ export class ProviderController {
   @Get('profile')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: GetProviderProfileResDto })
-  async get(@Req() req: any) {
-    return await this.providerService.get({ userId: req?.user?._id });
+  async getProfile(@Req() req: any) {
+    return await this.providerService.getProviderProfile({
+      userId: req?.user?._id,
+    });
   }
 
   @Auth()
@@ -85,5 +89,13 @@ export class ProviderController {
       userId,
       ...query,
     });
+  }
+
+  @Auth()
+  @Get('/:userId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: GetProviderProfileResDto })
+  async getDetail(@Param() param: UserIdDto) {
+    return await this.providerService.getProviderDetail({ ...param });
   }
 }
