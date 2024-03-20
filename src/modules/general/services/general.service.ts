@@ -91,6 +91,15 @@ export class GeneralService {
     }
   }
 
+  async getCity(payload: { cityId: string }) {
+    try {
+      const { cityId } = payload;
+      return await this.cityRepository.findOne({ _id: cityId });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateCity(payload: { cityId: string; name: string }) {
     try {
       const { cityId, name } = payload;
@@ -116,11 +125,12 @@ export class GeneralService {
           sort,
           projection,
         });
-        data.cities = data.cities.map((city) => city.name);
+        // data.cities = data.cities.map((city) => city.name);
         response = data;
       } else {
-        const cities = await this.cityRepository.find({}, projection, { sort });
-        response = cities.map((city) => city.name);
+        response = await this.cityRepository.find({}, projection, { sort });
+        // const cities = 
+        // response = cities.map((city) => city.name);
       }
       return response;
     } catch (error) {

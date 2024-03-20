@@ -11,11 +11,23 @@ import {
   Query,
   Param,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApiFormData, Auth } from 'src/decorators';
 import { WorkshopService } from '../services/workshop.service';
 import { MultipleAttachmentDto } from '@shared/dto';
-import { CreateWorkshopReqDto, ListWorkshopReqDto, UpdateWorkshopReqDto, WorkshopIdDto } from '../dto';
+import {
+  CreateWorkshopReqDto,
+  ListWorkshopReqDto,
+  ListWorkshopResDto,
+  UpdateWorkshopReqDto,
+  WorkshopIdDto,
+  WorkshopResDto,
+} from '../dto';
 
 @Controller('workshop')
 @ApiTags('Workshop')
@@ -28,13 +40,13 @@ export class WorkshopController {
   @ApiFormData({
     multiple: true,
     fieldName: 'media',
-    fileTypes: ['png', 'jpeg', 'jpg', 'mp4', 'avi', 'mov'],
+    fileTypes: ['png', 'jpeg', 'jpg', 'svg', 'mp4', 'avi', 'mov'],
     errorMessage: 'Invalid file entered.',
     required: true,
     maxCount: 6,
   })
   @HttpCode(HttpStatus.CREATED)
-  // @ApiCreatedResponse({ type: CreateWorkshopResDto })
+  @ApiCreatedResponse({ type: WorkshopResDto })
   async createWorkshop(
     @Req() req: any,
     @Body() payload: CreateWorkshopReqDto,
@@ -51,6 +63,7 @@ export class WorkshopController {
   @Auth()
   @Get('/list')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: ListWorkshopResDto })
   async listWorkshops(@Query() query: ListWorkshopReqDto) {
     return await this.workshopService.listWorkshops({ ...query });
   }
@@ -58,6 +71,7 @@ export class WorkshopController {
   @Auth()
   @Put('/:workshopId')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: WorkshopResDto })
   async updateWorkshop(
     @Param() param: WorkshopIdDto,
     @Body() payload: UpdateWorkshopReqDto,
@@ -68,6 +82,7 @@ export class WorkshopController {
   @Auth()
   @Get('/:workshopId')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: WorkshopResDto })
   async getWorkshop(@Param() param: WorkshopIdDto) {
     return await this.workshopService.getWorkshop({ ...param });
   }

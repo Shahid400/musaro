@@ -7,11 +7,13 @@ export interface ISubscriptionPlan {
 }
 
 export interface IListSubscriptionPlan {
+  type: string;
   isActive?: boolean;
 }
 
-export interface IGetSubscriptionPlan extends IListSubscriptionPlan {
+export interface IGetSubscriptionPlan {
   _id: string;
+  isActive?: boolean;
 }
 
 export interface IUpdateSubscriptionPlan {

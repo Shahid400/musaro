@@ -152,11 +152,15 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
 
   async findOneAndDelete(
     filterQuery: FilterQuery<TDocument>,
+    options: { notFoundThrowError: string | boolean } = {
+      notFoundThrowError: true,
+    },
   ): Promise<TDocument> {
+    const { notFoundThrowError } = options;
     const document = await Promise.resolve(
       this.model.findOneAndDelete(filterQuery, {}),
     );
-    if (!document) {
+    if (!document && notFoundThrowError) {
       throw new NotFoundException(`${this.singleName} not found.`);
     }
     return document;

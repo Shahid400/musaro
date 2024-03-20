@@ -5,16 +5,19 @@ export interface ICreateWorkshop {
   transactionId: string;
   paymentOption: string;
   workshopName: string;
-  description: string;
+  city: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
   pricePerPerson: string;
+  maxPeople: number;
+  description: string;
   location: {
-    address: string;
+    // address: string;
     longitude: string;
     latitude: string;
   };
-  maxPeople: number;
-  startDate: string;
-  endDate: string;
   media: MediaObject[];
   userId: string;
 }

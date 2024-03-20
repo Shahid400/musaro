@@ -9,8 +9,8 @@ import { SchemaTypes, Types } from 'mongoose';
   timestamps: false,
 })
 class WorkshopLocation extends AbstractSchema<string> {
-  @Prop({ type: String, required: true })
-  address: string;
+  // @Prop({ type: String, required: true })
+  // address: string;
 
   @Prop({ type: String, required: true })
   longitude: string;
@@ -32,22 +32,31 @@ export class Workshop extends AbstractSchema<string> {
   workshopName: string;
 
   @Prop({ type: String, required: true })
-  description: string;
-
-  @Prop({ type: String, required: true })
-  pricePerPerson: string;
-
-  @Prop({ type: WorkshopLocationSchema, required: true })
-  location: WorkshopLocation;
-
-  @Prop({ type: Number, required: true })
-  maxPeople: number;
+  city: string;
 
   @Prop({ type: Date, required: true })
   startDate: string;
 
   @Prop({ type: Date, required: true })
   endDate: string;
+
+  @Prop({ type: String, required: true })
+  startTime: string;
+
+  @Prop({ type: String, required: true })
+  endTime: string;
+
+  @Prop({ type: String, required: true })
+  pricePerPerson: string;
+
+  @Prop({ type: Number, required: true })
+  maxPeople: number;
+
+  @Prop({ type: String, required: true })
+  description: string;
+
+  @Prop({ type: WorkshopLocationSchema, required: true })
+  location: WorkshopLocation;
 
   @Prop({ type: [{ type: String }], required: true })
   media: string[];

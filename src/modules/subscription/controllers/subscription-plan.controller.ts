@@ -15,6 +15,7 @@ import { Auth } from 'src/decorators';
 import {
   CreateSubscriptionPlanReqDto,
   GetSubscriptionPlanReqDto,
+  ListSubscriptionPlanReqDto,
   SubscriptionPlanFilterReqDto,
   SubscriptionPlanReqDto,
   UpdateSubscriptionPlanReqDto,
@@ -54,7 +55,7 @@ export class SubscriptionPlanController {
   @Auth()
   @HttpCode(HttpStatus.OK)
   // @ApiCreatedResponse({ type: UpdateProviderProfileResDto })
-  async listSubscriptionPlans(@Query() query: SubscriptionPlanFilterReqDto) {
+  async listSubscriptionPlans(@Query() query: ListSubscriptionPlanReqDto) {
     return await this.subscriptionPlanService.listSubscriptionPlans(query);
   }
 

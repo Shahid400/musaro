@@ -14,17 +14,29 @@ import {
   Put,
 } from '@nestjs/common';
 import { GeneralService } from '../services/general.service';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiAcceptedResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApiFormData, Auth } from 'src/decorators';
 import {
   AddCityReqDto,
   CityIdReqDto,
+  CityResDto,
   // CreateAttachmentReqDto,
   CreateProfessionReqDto,
+  CreateProfessionResDto,
+  DeleteCityResDto,
   // JobAttachmentDto,
   ListCitiesReqDto,
+  ListCityResDto,
+  ListProfessionResDto,
   ListProfessionsReqDto,
   ProfessionQueryReqDto,
+  ProfessionResDto,
   UpdateAppLanguageReqDto,
   UpdateAppLanguageResDto,
   UpdateProfessionReqDto,
@@ -56,8 +68,8 @@ export class GeneralController {
     return await this.generalService.updateAppLanguage({ userId, ...payload });
   }
 
-  // @ApiBearerAuth()
-  // @Auth()
+  @ApiBearerAuth()
+  @Auth()
   @Post('profession')
   @ApiFormData({
     single: true,
@@ -67,6 +79,7 @@ export class GeneralController {
     required: true,
   })
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: CreateProfessionResDto })
   async createProfession(
     @Body() payload: CreateProfessionReqDto,
     @UploadedFile() img: any,
@@ -74,8 +87,8 @@ export class GeneralController {
     return await this.generalService.createProfession({ img, ...payload });
   }
 
-  // @ApiBearerAuth()
-  // @Auth()
+  @ApiBearerAuth()
+  @Auth()
   @Patch('profession/:professionId')
   @ApiFormData({
     single: true,
@@ -85,6 +98,7 @@ export class GeneralController {
     required: false,
   })
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: ProfessionResDto })
   async updateProfession(
     @Param() param: ProfessionQueryReqDto,
     @Body() payload: UpdateProfessionReqDto,
@@ -97,26 +111,38 @@ export class GeneralController {
     });
   }
 
+  @ApiBearerAuth()
+  @Auth()
   @Get('profession/:professionId')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: ProfessionResDto })
   async getProfession(@Param() param: ProfessionQueryReqDto) {
     return await this.generalService.getProfession({ ...param });
   }
 
+  @ApiBearerAuth()
+  @Auth()
   @Get('professions')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: ListProfessionResDto })
   async listProfessions(@Query() query: ListProfessionsReqDto) {
     return await this.generalService.listProfessions({ ...query });
   }
 
+  @ApiBearerAuth()
+  @Auth()
   @Post('city')
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: CityResDto })
   async addCity(@Body() payload: AddCityReqDto) {
     return await this.generalService.addCity({ ...payload });
   }
 
+  @ApiBearerAuth()
+  @Auth()
   @Put('city/:cityId')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: CityResDto })
   async updateCity(
     @Param() param: CityIdReqDto,
     @Body() payload: AddCityReqDto,
@@ -124,14 +150,29 @@ export class GeneralController {
     return await this.generalService.updateCity({ ...param, ...payload });
   }
 
+  @ApiBearerAuth()
+  @Auth()
   @Get('city')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: ListCityResDto })
   async listCities(@Query() query?: ListCitiesReqDto) {
     return await this.generalService.listCities({ ...query });
   }
 
+  @ApiBearerAuth()
+  @Auth()
+  @Get('city/:cityId')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @ApiAcceptedResponse({ type: ListCityResDto })
+  async getCities(@Param() param: CityIdReqDto) {
+    return await this.generalService.getCity({ ...param });
+  }
+
+  @ApiBearerAuth()
+  @Auth()
   @Delete('city/:cityId')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: DeleteCityResDto })
   async deleteCity(@Param() param: CityIdReqDto) {
     return await this.generalService.deleteCity({ ...param });
   }

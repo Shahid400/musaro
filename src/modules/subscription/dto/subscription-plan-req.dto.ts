@@ -3,6 +3,7 @@ import { SubscriptionPlanType, SubscriptionType } from '@shared/constants';
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsBooleanString,
   IsEnum,
   IsInt,
@@ -61,7 +62,7 @@ export class SubscriptionPlanReqDto {
 
 export class SubscriptionPlanFilterReqDto {
   @ApiProperty({ type: Boolean, example: true, required: false })
-  @IsBooleanString()
+  @IsBoolean()
   @IsOptional()
   @Type(() => Boolean)
   @Transform(({ value }) => {
@@ -76,6 +77,17 @@ export class GetSubscriptionPlanReqDto extends SubscriptionPlanFilterReqDto {
   @IsMongoId()
   @IsNotEmpty()
   planId: string;
+}
+
+export class ListSubscriptionPlanReqDto extends SubscriptionPlanFilterReqDto {
+  @ApiProperty({
+    type: String,
+    example: SubscriptionPlanType.PROVIDER,
+    required: true,
+  })
+  @IsEnum(SubscriptionPlanType)
+  @IsNotEmpty()
+  type: string;
 }
 
 export class UpdateSubscriptionPlanReqDto extends PartialType(

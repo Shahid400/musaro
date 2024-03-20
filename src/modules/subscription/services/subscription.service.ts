@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { SubscriptionPlanService } from './subscription-plan.service';
 import { ConfigService } from '@nestjs/config';
 import { PaymentService } from 'src/modules/payment';
@@ -92,6 +96,12 @@ export class SubscriptionService {
         status: SubscriptionStatus.ACTIVE,
       });
     } catch (error) {
+      if (
+        error?.name === 'AxiosError' &&
+        error?.response?.statusText === 'Not Found'
+      )
+        throw new NotFoundException('Invalid Payment');
+
       throw error;
     }
   }

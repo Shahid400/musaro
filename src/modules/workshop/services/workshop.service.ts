@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PaymentType } from '@shared/constants';
+import { PaymentType, WorkshopStatus } from '@shared/constants';
 import { WorkshopRepository } from '../repositories';
 import { SubscriptionService } from 'src/modules/subscription/services';
 import { ICreateWorkshop, IListWorkshops } from '../interfaces';
@@ -23,6 +23,7 @@ export class WorkshopService {
       media,
       ...restPayload
     } = payload;
+    let workshop;
 
     try {
       // Concurrent upload
@@ -34,7 +35,7 @@ export class WorkshopService {
 
       // Wait for all media uploads to complete
       const uploadedMedia = await Promise.all(uploadedMediaPromises);
-      const workshop = await this.workshopRepository.create({
+      workshop = await this.workshopRepository.create({
         ...restPayload,
         createdBy: userId,
         media: uploadedMedia,
@@ -49,6 +50,19 @@ export class WorkshopService {
       });
       return workshop;
     } catch (error) {
+      if (workshop) {
+        await Promise.all(
+          (workshop?.media || []).map((url) =>
+            this.s3
+              .deleteFile(url)
+              .catch((err) => console.error('Error deleting media:', err)),
+          ),
+        );
+        await this.workshopRepository.findOneAndDelete(
+          { _id: workshop?._id },
+          { notFoundThrowError: false },
+        );
+      }
       throw error;
     }
   }
@@ -76,15 +90,29 @@ export class WorkshopService {
       throw error;
     }
   }
+
   async listWorkshops(payload: IListWorkshops) {
     try {
       const { userId, limit, offset } = payload;
       return await this.workshopRepository.paginate({
         filterQuery: {
           ...(userId && { createdBy: new Types.ObjectId(userId) }),
+          status: WorkshopStatus.OPEN,
+          isApproved: true,
         },
         limit,
         offset,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteWorkshop(payload: { workshopId: string }) {
+    try {
+      const { workshopId } = payload;
+      return await this.workshopRepository.findOneAndDelete({
+        _id: workshopId,
       });
     } catch (error) {
       throw error;

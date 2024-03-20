@@ -17,20 +17,20 @@ import {
 import { ApiMultipleFiles } from 'src/decorators';
 
 class WorkshopLocation {
-  @ApiProperty({ type: String, example: '', required: true })
-  @IsString()
-  @IsNotEmpty()
-  address: string;
-
-  @ApiProperty({ type: String, example: '', required: true })
-  @IsString()
-  @IsNotEmpty()
-  longitude: string;
+  // @ApiProperty({ type: String, example: '', required: true })
+  // @IsString()
+  // @IsNotEmpty()
+  // address: string;
 
   @ApiProperty({ type: String, example: '', required: true })
   @IsString()
   @IsNotEmpty()
   latitude: string;
+
+  @ApiProperty({ type: String, example: '', required: true })
+  @IsString()
+  @IsNotEmpty()
+  longitude: string;
 }
 
 export class CreateWorkshopReqDto {
@@ -49,26 +49,40 @@ export class CreateWorkshopReqDto {
   @IsNotEmpty()
   paymentOption: string;
 
-  @ApiProperty({ type: String, example: 'workshopName', required: true })
+  @ApiProperty({ type: String, example: 'Workshop name', required: true })
   @IsString()
   @IsNotEmpty()
   workshopName: string;
 
-  @ApiProperty({ type: String, example: 'workshopName', required: true })
+  @ApiProperty({ type: String, example: '', required: true })
   @IsString()
   @IsNotEmpty()
-  description: string;
+  city: string;
 
-  @ApiProperty({ type: String, example: 'workshopName', required: true })
+  @ApiProperty({ type: String, example: '2024-05-01', required: true })
+  @IsISO8601()
+  @IsNotEmpty()
+  startDate: string;
+
+  @ApiProperty({ type: String, example: '2024-05-15', required: true })
+  @IsISO8601()
+  @IsNotEmpty()
+  endDate: string;
+
+  @ApiProperty({ type: String, example: '09:00 AM', required: true })
+  @IsString()
+  @IsNotEmpty()
+  startTime: string;
+
+  @ApiProperty({ type: String, example: '05:00 PM', required: true })
+  @IsString()
+  @IsNotEmpty()
+  endTime: string;
+
+  @ApiProperty({ type: String, example: '100', required: true })
   @IsString()
   @IsNotEmpty()
   pricePerPerson: string;
-
-  @ApiProperty({ type: WorkshopLocation, required: true })
-  @IsObject()
-  @IsNotEmpty()
-  @ValidateNested()
-  location: WorkshopLocation;
 
   @ApiProperty({ type: Number, example: 50, required: true })
   @IsNotEmpty()
@@ -76,18 +90,23 @@ export class CreateWorkshopReqDto {
   @IsNumber()
   maxPeople: number;
 
-  @ApiProperty({ type: String, example: '2024-05-01', required: true })
-  @IsISO8601()
+  @ApiProperty({
+    type: String,
+    example: 'workshop description',
+    required: true,
+  })
+  @IsString()
   @IsNotEmpty()
-  startDate: string;
+  description: string;
 
-  @ApiProperty({ type: String, example: '2024-06-01', required: true })
-  @IsISO8601()
+  @ApiProperty({ type: WorkshopLocation, required: true })
+  @IsObject()
   @IsNotEmpty()
-  endDate: string;
+  @ValidateNested()
+  location: WorkshopLocation;
 
   @ApiMultipleFiles({ required: true })
-  attachments: Array<MediaObject>;
+  media: Array<MediaObject>;
 }
 
 export class WorkshopIdDto {
