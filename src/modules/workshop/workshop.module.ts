@@ -7,6 +7,7 @@ import { SharedModule } from 'src/shared/shared.module';
 import { UserModule } from '../user';
 import { SubscriptionModule } from '../subscription/subscription.module';
 import { WorkshopRepository } from './repositories';
+import { PaymentModule } from '../payment';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { WorkshopRepository } from './repositories';
     ]),
     SharedModule,
     UserModule,
+    PaymentModule,
     SubscriptionModule,
   ],
   controllers: [WorkshopController],

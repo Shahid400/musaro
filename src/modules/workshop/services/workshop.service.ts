@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { PaymentType, WorkshopStatus } from '@shared/constants';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { PaymentStatus, PaymentType, WorkshopStatus } from '@shared/constants';
 import { WorkshopRepository } from '../repositories';
 import { SubscriptionService } from 'src/modules/subscription/services';
 import { ICreateWorkshop, IListWorkshops } from '../interfaces';
 import { S3Service } from '@shared/services';
 import { Types } from 'mongoose';
+import { PaymentService } from 'src/modules/payment';
 
 @Injectable()
 export class WorkshopService {
   constructor(
     private readonly workshopRepository: WorkshopRepository,
     private readonly subscriptionService: SubscriptionService,
+    private readonly paymentService: PaymentService,
     private s3: S3Service,
   ) {}
 
@@ -74,10 +76,12 @@ export class WorkshopService {
   }) {
     try {
       const { workshopId, workshopStatus } = payload;
-      return await this.workshopRepository.findOneAndUpdate(
+      const workshop = await this.workshopRepository.findOneAndUpdate(
         { _id: workshopId },
         { $set: { status: workshopStatus } },
       );
+      delete workshop?.tickets;
+      return workshop;
     } catch (error) {
       throw error;
     }
@@ -86,7 +90,10 @@ export class WorkshopService {
   async getWorkshop(payload: { workshopId: string }) {
     try {
       const { workshopId } = payload;
-      return await this.workshopRepository.findOne({ _id: workshopId }, { tickets: 0 });
+      return await this.workshopRepository.findOne(
+        { _id: workshopId },
+        { tickets: 0 },
+      );
     } catch (error) {
       throw error;
     }
@@ -103,6 +110,7 @@ export class WorkshopService {
         },
         limit,
         offset,
+        projection: { tickets: 0 },
       });
     } catch (error) {
       throw error;
@@ -120,14 +128,58 @@ export class WorkshopService {
   //   }
   // }
 
-  // async purchaseWorkshopTicket(payload: { workshopId: string }) {
-  //   try {
-  //     const { workshopId } = payload;
-  //     return await this.workshopRepository.findOneAndDelete({
-  //       _id: workshopId,
-  //     });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  async purchaseTicket(payload: {
+    workshopId: string;
+    transactionId: string;
+    paymentOption: string;
+    quantity: number;
+    customerId: string;
+  }) {
+    try {
+      const { workshopId, transactionId, paymentOption, quantity, customerId } =
+        payload;
+      const [workshop, paymentDetail] = await Promise.all([
+        this.workshopRepository.findOne({ _id: workshopId }),
+        this.paymentService.fetchPayment(transactionId),
+      ]);
+      const { pricePerPerson, maxPeople, remainingSeats } = workshop;
+
+      const { status, amount: paidAmount, metadata } = paymentDetail;
+      if (status !== 'paid') throw new BadRequestException('Fee not paid');
+      if (paidAmount / 100 != quantity * pricePerPerson)
+        throw new BadRequestException('Fee not fully paid');
+      if (metadata?.userId != customerId)
+        throw new BadRequestException('Unverified Payment');
+      if (remainingSeats + quantity > maxPeople)
+        throw new BadRequestException('Seats Full');
+
+      const payment = await this.paymentService.createPayment({
+        userId: customerId,
+        amount: paidAmount,
+        paymentOption,
+        paymentType: PaymentType.WORKSHOP_TICKET,
+        paymentStatus: PaymentStatus.SUCCESS,
+        transactionId,
+        paymentDate: new Date(),
+      });
+
+      await this.workshopRepository.findOneAndUpdate(
+        {
+          _id: workshopId,
+        },
+        {
+          $push: {
+            tickets: {
+              customerId,
+              quantity,
+              paymentId: payment?._id,
+            },
+          },
+        },
+      );
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

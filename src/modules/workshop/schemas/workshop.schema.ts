@@ -62,8 +62,8 @@ export class Workshop extends AbstractSchema<string> {
   @Prop({ type: String, required: true })
   endTime: string;
 
-  @Prop({ type: String, required: true })
-  pricePerPerson: string;
+  @Prop({ type: Number, required: true })
+  pricePerPerson: number;
 
   @Prop({ type: Number, required: true })
   maxPeople: number;
@@ -94,7 +94,7 @@ export class Workshop extends AbstractSchema<string> {
   @Prop({ type: Number, required: true, default: 0 })
   remainingSeats: number; // Number of remaining seats for the workshop
 
-  @Prop({ type: [{ type: TicketSchema }], required: false })
+  @Prop({ type: [{ type: TicketSchema }], required: false, default: [] })
   tickets?: Ticket[]; // Array of tickets associated with the workshop
 }
 

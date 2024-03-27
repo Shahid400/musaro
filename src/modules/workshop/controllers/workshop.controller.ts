@@ -24,6 +24,8 @@ import {
   CreateWorkshopReqDto,
   ListWorkshopReqDto,
   ListWorkshopResDto,
+  PurchaseTicketReqDto,
+  PurchaseTicketResDto,
   UpdateWorkshopReqDto,
   WorkshopIdDto,
   WorkshopResDto,
@@ -85,5 +87,17 @@ export class WorkshopController {
   @ApiOkResponse({ type: WorkshopResDto })
   async getWorkshop(@Param() param: WorkshopIdDto) {
     return await this.workshopService.getWorkshop({ ...param });
+  }
+
+  @Auth()
+  @Post('/purchase-ticket')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: PurchaseTicketResDto })
+  async purchaseTicket(@Req() req: any, @Body() payload: PurchaseTicketReqDto) {
+    const userId = req?.user?._id;
+    return await this.workshopService.purchaseTicket({
+      ...payload,
+      customerId: userId,
+    });
   }
 }

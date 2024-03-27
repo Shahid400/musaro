@@ -11,7 +11,7 @@ export class WorkshopResDto extends ApiResponseDto {
       endDate: '2024-05-15T00:00:00.000Z',
       startTime: '09:00 AM',
       endTime: '05:00 PM',
-      pricePerPerson: '100',
+      pricePerPerson: 100,
       maxPeople: 50,
       description: 'workshop description',
       location: {
@@ -44,7 +44,7 @@ export class ListWorkshopResDto extends ApiResponseDto {
           endDate: '2024-05-15T00:00:00.000Z',
           startTime: '09:00 AM',
           endTime: '05:00 PM',
-          pricePerPerson: '100',
+          pricePerPerson: 100,
           maxPeople: 50,
           description: 'workshop description',
           location: {
@@ -70,5 +70,13 @@ export class ListWorkshopResDto extends ApiResponseDto {
       },
     },
   })
+  data: any;
+}
+
+export class PurchaseTicketResDto extends ApiResponseDto {
+  @ApiProperty({ example: 'Tickets Booked!' })
+  message: string;
+
+  @ApiProperty({ example: null })
   data: any;
 }

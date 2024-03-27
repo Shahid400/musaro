@@ -10,7 +10,7 @@ export interface ICreateWorkshop {
   endDate: string;
   startTime: string;
   endTime: string;
-  pricePerPerson: string;
+  pricePerPerson: number;
   maxPeople: number;
   description: string;
   location: {

@@ -80,9 +80,10 @@ export class CreateWorkshopReqDto {
   endTime: string;
 
   @ApiProperty({ type: String, example: '100', required: true })
-  @IsString()
   @IsNotEmpty()
-  pricePerPerson: string;
+  @Type(() => Number)
+  @IsNumber()
+  pricePerPerson: number;
 
   @ApiProperty({ type: Number, example: 50, required: true })
   @IsNotEmpty()
@@ -128,4 +129,27 @@ export class ListWorkshopReqDto extends PaginationDto {
   @IsOptional()
   @IsMongoId()
   userId?: string;
+}
+
+export class PurchaseTicketReqDto {
+  @ApiProperty({ type: String, example: '', required: true })
+  @IsMongoId()
+  @IsNotEmpty()
+  workshopId: string;
+
+  @ApiProperty({ type: String, example: '', required: true })
+  @IsString()
+  @IsNotEmpty()
+  transactionId: string;
+
+  @ApiProperty({ type: String, example: PaymentOption.VISA, required: true })
+  @IsEnum(PaymentOption)
+  @IsNotEmpty()
+  paymentOption: string;
+
+  @ApiProperty({ type: Number, example: 2, required: true })
+  @IsNotEmpty()
+  @Type(() => Number)
+  @IsNumber()
+  quantity: number;
 }
