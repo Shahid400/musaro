@@ -62,6 +62,23 @@ export enum NotificationType {
   REQUEST = 'request',
 }
 
+export enum ReviewType {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+}
+
+export enum DateRangeOption {
+  THIS_MONTH = 'This Month',
+  LAST_MONTH = 'Last Month',
+  THIS_YEAR = 'This Year',
+  LAST_YEAR = 'Last Year',
+  CUSTOM_RANGE = 'Custom Range',
+}
+
+export enum ActivityLogType {
+  VIEW_PROFILE = 'VIEW_PROFILE',
+}
+
 export enum WorkshopStatus {
   OPEN = 'OPEN',
   CLOSED = 'CLOSED',

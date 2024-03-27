@@ -12,10 +12,10 @@ export class Subscription extends AbstractSchema<string> {
   @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'users' })
   userId: string; // User ID who subscribed
 
-  @Prop({ type: Types.ObjectId, required: true, ref: 'subscription-plans' })
+  @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'subscription-plans' })
   planId: string;
 
-  @Prop({ type: Types.ObjectId, required: false, ref: 'workshops' })
+  @Prop({ type: SchemaTypes.ObjectId, required: false, ref: 'workshops' })
   workshopId?: string;
 
   // @Prop({ type: String, required: true, enum: SubscriptionType })
@@ -24,7 +24,7 @@ export class Subscription extends AbstractSchema<string> {
   // @Prop({ type: Number, required: true })
   // amount: number;
 
-  @Prop({ type: Types.ObjectId, required: true, ref: 'payments' })
+  @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'payments' })
   paymentId: string;
 
   @Prop({ type: Date, required: true })

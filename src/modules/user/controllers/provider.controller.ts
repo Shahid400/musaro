@@ -21,6 +21,7 @@ import { Auth } from 'src/decorators/auth.decorator';
 import {
   AvailabilityReqDto,
   GetProviderProfileResDto,
+  GetProviderReqDto,
   ListProvidersReqDto,
   ListProvidersResDto,
   ProviderAvailabilityResDto,
@@ -65,9 +66,10 @@ export class ProviderController {
   @Get('profile')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: GetProviderProfileResDto })
-  async getProfile(@Req() req: any) {
+  async getProfile(@Req() req: any, @Query() query: GetProviderReqDto) {
     return await this.providerService.getProviderProfile({
       userId: req?.user?._id,
+      providerId: query?.providerId,
     });
   }
 

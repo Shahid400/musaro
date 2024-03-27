@@ -291,9 +291,15 @@ export abstract class AbstractRepository<TDocument extends AbstractSchema>
     );
   }
 
-  // async count(filterQuery?: FilterQuery<TDocument>) {
-  //   return await Promise.resolve(this.model.count(filterQuery))
-  // }
+  async count(filterQuery?: FilterQuery<TDocument>): Promise<number> {
+    try {
+      return (await this.model.countDocuments(filterQuery || {})) ?? 0;
+    } catch (error) {
+      throw new NotFoundException(
+        `Error counting ${this.singleName.toLowerCase()} documents.`,
+      );
+    }
+  }
 
   async getDetails() {
     return await this.model.db.asPromise();

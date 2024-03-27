@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
-import { UserRole } from '@shared/constants';
+import { ActivityLogType, UserRole } from '@shared/constants';
 import {
   IUpdateProviderProfile,
   IListProviders,
@@ -8,17 +8,29 @@ import {
 } from '../interfaces';
 import { S3Service } from '@shared/services';
 import { Types } from 'mongoose';
+import { ActivityLogRepository } from 'src/modules/activity-log';
 
 @Injectable()
 export class ProviderService {
   constructor(
     private readonly userRepository: UserRepository,
+    private activityLogRepository: ActivityLogRepository,
     private s3: S3Service,
   ) {}
 
-  async getProviderProfile(payload: { userId: string }) {
+  async getProviderProfile(payload: { userId: string; providerId: string }) {
     try {
-      const { userId } = payload;
+      const { userId, providerId } = payload;
+
+      // Increment provider's profile view count on user profile view.
+      if (providerId) {
+        const activityPayload = {
+          createdBy: userId,
+          createdTo: providerId,
+          logType: ActivityLogType.VIEW_PROFILE,
+        };
+        await this.activityLogRepository.create(activityPayload);
+      }
 
       return await this.userRepository.findOne(
         {
@@ -146,6 +158,8 @@ export class ProviderService {
         unAvailable,
         unAvailableStartDate = null,
         unAvailableEndDate = null,
+        isLocationLimited,
+        limitedCities = [],
       } = payload;
 
       await this.userRepository.findOneAndUpdate(
@@ -157,6 +171,8 @@ export class ProviderService {
             'serviceDetail.unAvailable': unAvailable,
             'serviceDetail.unAvailableStartDate': unAvailableStartDate,
             'serviceDetail.unAvailableEndDate': unAvailableEndDate,
+            'serviceDetail.isLocationLimited': isLocationLimited,
+            'serviceDetail.limitedCities': limitedCities,
           },
         },
       );

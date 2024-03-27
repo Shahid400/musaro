@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsISO8601,
@@ -115,4 +116,22 @@ export class AvailabilityReqDto {
   @IsNotEmpty()
   @Validate(IsEndDateGreaterThanStartDateConstraint)
   unAvailableEndDate: string;
+
+  @ApiProperty({ example: false, required: true })
+  @IsNotEmpty()
+  @IsBoolean()
+  @Transform(({ obj, key }) => obj[key] === 'true')
+  isLocationLimited: boolean;
+
+  @ApiProperty({ type: Array, example: [], required: false })
+  @IsOptional()
+  @IsArray()
+  limitedCities: string[];
+}
+
+export class GetProviderReqDto {
+  @ApiProperty({ example: '65e321eb51c43fec6ac67897', required: false })
+  @IsMongoId()
+  @IsOptional()
+  providerId: string;
 }

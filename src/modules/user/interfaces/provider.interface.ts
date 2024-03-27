@@ -23,4 +23,6 @@ export interface IProviderAvailability {
   unAvailable: boolean;
   unAvailableStartDate?: string;
   unAvailableEndDate?: string;
+  isLocationLimited: boolean;
+  limitedCities?: string[];
 }

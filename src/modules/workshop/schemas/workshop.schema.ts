@@ -4,6 +4,22 @@ import { WorkshopStatus } from '@shared/constants';
 import { SchemaTypes, Types } from 'mongoose';
 
 @Schema({
+  timestamps: true,
+})
+export class Ticket extends AbstractSchema<string> {
+  @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'users' })
+  customerId: string; // Customer ID who purchased the ticket
+
+  @Prop({ type: Number, required: true })
+  quantity: number; // Quantity of tickets purchased
+
+  @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'payments' })
+  paymentId: string; // Reference to the payment for which the ticket is associated
+}
+
+export const TicketSchema = SchemaFactory.createForClass(Ticket);
+
+@Schema({
   _id: false,
   versionKey: false,
   timestamps: false,
@@ -74,6 +90,12 @@ export class Workshop extends AbstractSchema<string> {
 
   @Prop({ type: SchemaTypes.ObjectId, required: true, ref: 'users' })
   createdBy: string;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  remainingSeats: number; // Number of remaining seats for the workshop
+
+  @Prop({ type: [{ type: TicketSchema }], required: false })
+  tickets?: Ticket[]; // Array of tickets associated with the workshop
 }
 
 export const WorkshopSchema = SchemaFactory.createForClass(Workshop);

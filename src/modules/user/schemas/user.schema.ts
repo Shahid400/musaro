@@ -58,6 +58,19 @@ const ProviderDetailSchema = SchemaFactory.createForClass(ProviderDetail);
   versionKey: false,
   timestamps: false,
 })
+class ReviewDetails extends AbstractSchema<string> {
+  @Prop({ type: Number, default: 0, required: false })
+  avgRating?: number;
+  @Prop({ type: Number, default: 0, required: false })
+  avgResponseTime?: number;
+}
+const ReviewDetailsSchema = SchemaFactory.createForClass(ReviewDetails);
+
+@Schema({
+  _id: false,
+  versionKey: false,
+  timestamps: false,
+})
 class UserMetaData extends AbstractSchema<string> {
   @Prop({
     type: String,
@@ -99,6 +112,9 @@ class UserMetaData extends AbstractSchema<string> {
 
   @Prop({ type: String, required: false })
   fcmToken?: string;
+
+  @Prop({ type: ReviewDetailsSchema, required: false })
+  reviewDetails?: ReviewDetails;
 }
 const UserMetaDataSchema = SchemaFactory.createForClass(UserMetaData);
 

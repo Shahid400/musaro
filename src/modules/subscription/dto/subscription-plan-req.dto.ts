@@ -65,10 +65,7 @@ export class SubscriptionPlanFilterReqDto {
   @IsBoolean()
   @IsOptional()
   @Type(() => Boolean)
-  @Transform(({ value }) => {
-    if (value == 'true') return true;
-    else return false;
-  })
+  @Transform(({ obj, key }) => obj[key] === 'true')
   isActive?: boolean;
 }
 

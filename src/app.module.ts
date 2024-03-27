@@ -12,6 +12,8 @@ import { GeneralModule } from './modules/general/general.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { JobModule } from './modules/job/job.module';
+import { ReviewModule } from './modules/review/review.module';
+import { ActivityLogModule } from './modules/activity-log';
 import { WorkshopModule } from './modules/workshop/workshop.module';
 
 @Module({
@@ -34,6 +36,8 @@ import { WorkshopModule } from './modules/workshop/workshop.module';
     SubscriptionModule,
     NotificationModule,
     JobModule,
+    ReviewModule,
+    ActivityLogModule,
     WorkshopModule,
   ],
   controllers: [],

@@ -37,6 +37,7 @@ export class WorkshopService {
       const uploadedMedia = await Promise.all(uploadedMediaPromises);
       workshop = await this.workshopRepository.create({
         ...restPayload,
+        remainingSeats: restPayload?.maxPeople,
         createdBy: userId,
         media: uploadedMedia,
       });
@@ -85,7 +86,7 @@ export class WorkshopService {
   async getWorkshop(payload: { workshopId: string }) {
     try {
       const { workshopId } = payload;
-      return await this.workshopRepository.findOne({ _id: workshopId });
+      return await this.workshopRepository.findOne({ _id: workshopId }, { tickets: 0 });
     } catch (error) {
       throw error;
     }
@@ -108,14 +109,25 @@ export class WorkshopService {
     }
   }
 
-  async deleteWorkshop(payload: { workshopId: string }) {
-    try {
-      const { workshopId } = payload;
-      return await this.workshopRepository.findOneAndDelete({
-        _id: workshopId,
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
+  // async deleteWorkshop(payload: { workshopId: string }) {
+  //   try {
+  //     const { workshopId } = payload;
+  //     return await this.workshopRepository.findOneAndDelete({
+  //       _id: workshopId,
+  //     });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  // async purchaseWorkshopTicket(payload: { workshopId: string }) {
+  //   try {
+  //     const { workshopId } = payload;
+  //     return await this.workshopRepository.findOneAndDelete({
+  //       _id: workshopId,
+  //     });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }
